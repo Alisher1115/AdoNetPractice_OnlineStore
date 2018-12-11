@@ -40,10 +40,10 @@ namespace OnlineStore
             customerAge.DataType = typeof(int);
 
             DataColumn customerAddress = new DataColumn("Address");
-            customerFullName.DataType = typeof(string);
+            customerAddress.DataType = typeof(string);
 
             DataColumn customerPhone = new DataColumn("Phone");
-            customerFullName.DataType = typeof(string);
+            customerPhone.DataType = typeof(string);
 
             customer.Columns.Add(customerId);
             customer.Columns.Add(customerFullName);
@@ -56,6 +56,7 @@ namespace OnlineStore
             // firstRow.BeginEdit();
             // firstRow.ItemArray = new object[] { 1, "P.P.Kirsanov", 42 };
             // firstRow.EndEdit();
+            dataSet.Tables.Add(customer);
             #endregion
 
             #region Employee
@@ -84,6 +85,7 @@ namespace OnlineStore
             employee.Columns.Add(employeeAge);
             employee.Columns.Add(employeeAddress);
             employee.Columns.Add(employeePhone);
+            dataSet.Tables.Add(employee);
             #endregion
 
             #region Cart
@@ -96,15 +98,17 @@ namespace OnlineStore
             cartId.AutoIncrementStep = 1;
 
             DataColumn cartCustomerId = new DataColumn("CustomerId");
-            cartFullName.DataType = typeof(int);
+            cartCustomerId.DataType = typeof(int);
 
             DataColumn cartTotalSum = new DataColumn("TotalSum");
-            cartAge.DataType = typeof(int);
+            cartTotalSum.DataType = typeof(int);
 
             cart.Columns.Add(cartId);
             cart.Columns.Add(cartCustomerId);
             cart.Columns.Add(cartTotalSum);
 
+            dataSet.Tables.Add(cart);
+            
             DataRelation cartCustomerIdRelation = new DataRelation("FK_cart_CustomerId", customerId, cartCustomerId);
             #endregion
 
@@ -122,6 +126,7 @@ namespace OnlineStore
 
             orderStatus.Columns.Add(orderStatusId);
             orderStatus.Columns.Add(orderStatusName);
+            dataSet.Tables.Add(orderStatus);
             #endregion
             
             #region Order
@@ -155,6 +160,8 @@ namespace OnlineStore
             order.Columns.Add(orderDate);
             order.Columns.Add(orderOrderStatusId);
 
+            dataSet.Tables.Add(order);
+            
             DataRelation orderCustomerIdRelation = new DataRelation("FK_order_CustomerId", customerId, orderCustomerId);
             DataRelation orderEmployeeIdRelation = new DataRelation("FK_order_EmployeeId", employeeId, orderEmployeeId);
             DataRelation orderOrderStatusIdRelation = new DataRelation("FK_order_orderStatusId", orderStatusId, orderOrderStatusId);
@@ -174,6 +181,7 @@ namespace OnlineStore
 
             deliveryStatus.Columns.Add(deliveryStatusId);
             deliveryStatus.Columns.Add(deliveryStatusName);
+            dataSet.Tables.Add(deliveryStatus);
             #endregion
             
             #region Delivery
@@ -195,6 +203,8 @@ namespace OnlineStore
             delivery.Columns.Add(deliveryOrderId);
             delivery.Columns.Add(deliveryDeliveryStatusId);
 
+            dataSet.Tables.Add(delivery);
+            
             DataRelation deliveryCustomerIdRelation = new DataRelation("FK_delivery_OrderId", orderId, deliveryOrderId);
             DataRelation deliveryDeliveryStatusIdRelation = new DataRelation("FK_delivery_StatusId", deliveryStatusId, deliveryDeliveryStatusId);
             #endregion
@@ -213,6 +223,7 @@ namespace OnlineStore
 
             manufacturer.Columns.Add(manufacturerId);
             manufacturer.Columns.Add(manufacturerName);
+            dataSet.Tables.Add(manufacturer);
             #endregion
             
             #region Category
@@ -229,6 +240,7 @@ namespace OnlineStore
 
             category.Columns.Add(categoryId);
             category.Columns.Add(categoryName);
+            dataSet.Tables.Add(category);
             #endregion
             
             #region Good
@@ -262,6 +274,8 @@ namespace OnlineStore
             good.Columns.Add(goodDescription);
             good.Columns.Add(goodPrice);
 
+            dataSet.Tables.Add(good);
+            
             DataRelation goodManufacturerIdRelation = new DataRelation("FK_good_ManufacturerId", manufacturerId, goodManufacturerId);
             DataRelation goodCategoryIdRelation = new DataRelation("FK_good_CategoryId", categoryId, goodCategoryId);
             #endregion
@@ -289,6 +303,8 @@ namespace OnlineStore
             cartGood.Columns.Add(cartGoodGoodId);
             cartGood.Columns.Add(cartGoodGoodCount);
 
+            dataSet.Tables.Add(cartGood);
+            
             DataRelation cartGoodCartIdRelation = new DataRelation("FK_cartGood_CartId", cartId, cartGoodCartId);
             DataRelation cartGoodGoodIdRelation = new DataRelation("FK_cartGood_CartId", goodId, cartGoodGoodId);
             #endregion
@@ -316,6 +332,8 @@ namespace OnlineStore
             orderGood.Columns.Add(orderGoodGoodId);
             orderGood.Columns.Add(orderGoodGoodCount);
 
+            dataSet.Tables.Add(orderGood);
+            
             DataRelation orderGoodCartIdRelation = new DataRelation("FK_orderGood_CartId", orderId, orderGoodOrderId);
             DataRelation orderGoodGoodIdRelation = new DataRelation("FK_orderGood_CartId", goodId, orderGoodGoodId);
             #endregion
@@ -334,6 +352,7 @@ namespace OnlineStore
 
             transactionStatus.Columns.Add(transactionStatusId);
             transactionStatus.Columns.Add(transactionStatusName);
+            dataSet.Tables.Add(transactionStatus);
             #endregion
             
             #region Transaction
@@ -355,23 +374,12 @@ namespace OnlineStore
             transaction.Columns.Add(transactionOrderId);
             transaction.Columns.Add(transactionTransactionStatusId);
 
+            dataSet.Tables.Add(transaction);
+            
             DataRelation transactionCustomerIdRelation = new DataRelation("FK_transaction_OrderId", orderId, transactionOrderId);
             DataRelation transactionTransactionStatusIdRelation = new DataRelation("FK_transaction_StatusId", transactionStatusId, transactionTransactionStatusId);
             #endregion
 
-            dataSet.Tables.Add(customer);
-            dataSet.Tables.Add(employee);
-            dataSet.Tables.Add(cart);
-            dataSet.Tables.Add(orderStatus);
-            dataSet.Tables.Add(order);
-            dataSet.Tables.Add(deliveryStatus);
-            dataSet.Tables.Add(delivery);
-            dataSet.Tables.Add(manufacturer);
-            dataSet.Tables.Add(good);
-            dataSet.Tables.Add(cartGood);
-            dataSet.Tables.Add(orderGood);
-            dataSet.Tables.Add(transactionStatus);
-            dataSet.Tables.Add(transaction);
 			Console.ReadKey(true);
 		}
 	}
