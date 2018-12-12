@@ -833,7 +833,7 @@ namespace OnlineStore
             dataSet.Tables.Add(cartGood);
 
             DataRelation cartGoodCartIdRelation = new DataRelation("FK_cartGood_CartId", cartId, cartGoodCartId);
-            DataRelation cartGoodGoodIdRelation = new DataRelation("FK_cartGood_CartId", goodId, cartGoodGoodId);
+            DataRelation cartGoodGoodIdRelation = new DataRelation("FK_cartGood_GoodId", goodId, cartGoodGoodId);
             #endregion
 
             #region OrderGood
@@ -924,7 +924,7 @@ namespace OnlineStore
 
             return dataSet;
         }
-        
+
         static void InsertToCart(DataSet dataSet, int goodsId, int customersId)
         {
             int count = 0;
@@ -938,16 +938,29 @@ namespace OnlineStore
                 if ((count > 100) || (count < 1))
                     IdError();
             }
-            
-            dataSet.Tables["CartGood"].Rows.Add(new object[] {customersId, goodsId, count});
+
+            dataSet.Tables["CartGood"].Rows.Add(new object[] { customersId, goodsId, count });
             // foreach (var dt in dataSet.Tables)
-            // {
             //     if (dt.TableName == "CartGood")
-            //     {
             //         dt.Rows.Add(new object [] {customersId, goodsId, });
-            //     }  
-            // }
+            int sum = 0;
+            int goodIndex = goodsId - 1;
+            int customerIndex = customersId - 1;
+
+            if (dataSet.Tables["Good"].Rows[goodIndex].ItemArray[0].ToString() == goodsId.ToString())
+            {
+                sum = (int)dataSet.Tables["Good"].Rows[goodIndex].ItemArray[5];
+                sum *= count;
+            }
+            dataSet.Tables["Cart"].Rows[customerIndex].ItemArray[2] = sum;
+
+            var goodsName= dataSet.Tables["Good"];
+            var goodsValue = dataSet.Tables["Good"].Rows[goodIndex].ItemArray;
             Console.WriteLine("Товар добавлен в корзину.");
+            for (int i = 0; i < goodsValue.Length; i++)
+            {
+                Console.WriteLine($"{goodsName.Columns[i].ColumnName}:{goodsValue[i]}");
+            }
         }
 
         static void SelectCustomer(DataSet dataSet, int Id)
@@ -973,7 +986,7 @@ namespace OnlineStore
             //         dt.Rows.Add(new object[] {Id, Id, 0});
             // }
         }
-        
+
         static void ParseError()
         {
             Console.WriteLine("Введите число.");
@@ -1053,6 +1066,41 @@ namespace OnlineStore
         static void CartList(DataSet dataSet, int customersId)
         {
             Console.Write("Посмотреть Корзину - 1");
+            //dataSet.Tables["Cart"].
+            IList<int> cartsIds = null;
+            IList<int> goodsIds = null;
+            IList<int> goodCount = null;
+            foreach (DataTable dt in dataSet.Tables)
+            {
+                if (dt.TableName == "CartGood")
+                {
+                    for (int i = 0; i < dt.Rows.Count; i++)
+                    {
+                        //cartsIds.Add(int.Parse(dt.Rows[i].ItemArray[1].ToString()));
+                        //goodsIds.Add(int.Parse(dt.Rows[i].ItemArray[2].ToString()));
+                        //goodCount.Add(int.Parse(dt.Rows[i].ItemArray[3].ToString()));
+                        //Console.WriteLine("\t\t{0}\t\t{1}\t\t{2}", dt.Rows[i].ItemArray[0], dt.Rows[i].ItemArray[1], dt.Rows[i].ItemArray[3]);
+                    }
+                }
+
+                if (dt.TableName == "Cart")
+                {
+                    Console.WriteLine(dt.TableName); // название таблицы
+
+                    foreach (DataColumn column in dt.Columns)
+                        if ((column.ColumnName == "Id") || (column.ColumnName == "Name") || (column.ColumnName == "Price"))
+                            Console.Write("\t\t{0}", column.ColumnName);
+                    Console.WriteLine();
+                }
+
+                if (dt.TableName == "Goods")
+                {
+                    for (int i = 0; i < dt.Rows.Count; i++)
+                    {
+                        Console.WriteLine("\t\t{0}\t\t{1}\t\t{2}", dt.Rows[i].ItemArray[0], dt.Rows[i].ItemArray[1], dt.Rows[i].ItemArray[5]);
+                    }
+                }
+            }
         }
     }
 }
