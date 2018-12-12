@@ -18,21 +18,22 @@ using System.Data.SqlClient;
 
 namespace OnlineStore
 {
-	class Program
-	{
-		public static void Main(string[] args)
-		{
+    class Program
+    {
+        public static void Main(string[] args)
+        {
             DataSet dataSet = new DataSet("OnlineStore");
             DataSetMethod(dataSet);
+            int customersId = CustomersList(dataSet);
+            GoodsList(dataSet, customersId);
 
-            Console.WriteLine("Выберите товары: ");
+            Console.Write("Посмотреть Корзину - 1");
+            CartList(dataSet, customersId);
 
-            Console.WriteLine("Посмотреть Корзину - 1");
+            Console.ReadKey(true);
+        }
 
-			Console.ReadKey(true);
-		}
-
-        static DataSet DataSetMethod (DataSet dataSet)
+        static DataSet DataSetMethod(DataSet dataSet)
         {
             var goods = new[] {
                 new { Id = 1, Name = "Duis", ManufacturerId = 19, CategoryId = 20, Description = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Curabitur", Price = 32 },
@@ -343,6 +344,212 @@ namespace OnlineStore
                 new { Id = 100, Name = "interdum" }
             };
 
+            var employees = new[] {
+                new { Id = 1, FullName = "Zephania H. Brooks", Age = 29, Address = "Ap #963-6775 Lorem St.", Phone = "(02983) 8620492" },
+                new { Id = 2, FullName = "Rebekah Cameron", Age = 27, Address = "585-4104 Ut St.", Phone = "(022) 44204433" },
+                new { Id = 3, FullName = "Danielle Fry", Age = 18, Address = "P.O. Box 611, 8684 Enim Ave", Phone = "(0890) 04205537" },
+                new { Id = 4, FullName = "Colby Allison", Age = 24, Address = "P.O. Box 167, 4978 Turpis. Avenue", Phone = "(06555) 5597798" },
+                new { Id = 5, FullName = "Clementine Sparks", Age = 24, Address = "189-4607 Hymenaeos. Street", Phone = "(00044) 0472447" },
+                new { Id = 6, FullName = "Devin Marquez", Age = 26, Address = "7679 Nam Avenue", Phone = "(036927) 695494" },
+                new { Id = 7, FullName = "Keegan V. Thomas", Age = 20, Address = "Ap #646-6942 Fringilla St.", Phone = "(04240) 8901120" },
+                new { Id = 8, FullName = "Quinn Guerra", Age = 30, Address = "4898 Mollis. Avenue", Phone = "(032) 47977954" },
+                new { Id = 9, FullName = "Buffy B. Sutton", Age = 20, Address = "Ap #385-3845 Sem Rd.", Phone = "(02949) 1858292" },
+                new { Id = 10, FullName = "Sigourney V. Kirk", Age = 19, Address = "639-3943 Blandit. Av.", Phone = "(01126) 1880045" },
+                new { Id = 11, FullName = "Adrian Z. Salas", Age = 20, Address = "Ap #128-2831 Nam Rd.", Phone = "(0300) 88903566" },
+                new { Id = 12, FullName = "Carson Tyson", Age = 21, Address = "405-8580 Donec Avenue", Phone = "(05474) 0257504" },
+                new { Id = 13, FullName = "Leilani Haley", Age = 19, Address = "Ap #819-659 Semper St.", Phone = "(010) 98904612" },
+                new { Id = 14, FullName = "Isaac L. Briggs", Age = 22, Address = "2690 Cubilia St.", Phone = "(036674) 688927" },
+                new { Id = 15, FullName = "Brynn W. Brewer", Age = 27, Address = "P.O. Box 752, 7068 Ut Avenue", Phone = "(036124) 919078" },
+                new { Id = 16, FullName = "Simon Burt", Age = 18, Address = "Ap #675-889 Ut Street", Phone = "(060) 50459644" },
+                new { Id = 17, FullName = "Mason R. Avila", Age = 18, Address = "Ap #351-1512 Nisi Street", Phone = "(0488) 42259134" },
+                new { Id = 18, FullName = "Abraham Sanford", Age = 29, Address = "P.O. Box 660, 3235 Tincidunt, Road", Phone = "(0515) 73476205" },
+                new { Id = 19, FullName = "Kevyn Buckley", Age = 28, Address = "625-923 Neque St.", Phone = "(04424) 3003924" },
+                new { Id = 20, FullName = "Donovan Boyle", Age = 20, Address = "Ap #416-1840 Donec St.", Phone = "(0026) 81130363" },
+                new { Id = 21, FullName = "Grady X. Slater", Age = 24, Address = "P.O. Box 541, 8104 Enim. St.", Phone = "(0256) 22347381" },
+                new { Id = 22, FullName = "Deborah X. Poole", Age = 22, Address = "Ap #843-6865 Malesuada Street", Phone = "(032593) 238373" },
+                new { Id = 23, FullName = "Charity E. Bond", Age = 26, Address = "Ap #689-6045 Nibh Ave", Phone = "(07249) 1036255" },
+                new { Id = 24, FullName = "Bree Hicks", Age = 23, Address = "P.O. Box 696, 6121 Cum Rd.", Phone = "(0865) 45238242" },
+                new { Id = 25, FullName = "Jacqueline Howell", Age = 27, Address = "P.O. Box 330, 7585 Maecenas Av.", Phone = "(0603) 47512685" },
+                new { Id = 26, FullName = "Odessa F. Dawson", Age = 19, Address = "957-7556 Hendrerit Rd.", Phone = "(091) 92558210" },
+                new { Id = 27, FullName = "Joan Lang", Age = 24, Address = "822-2037 Nulla Ave", Phone = "(022) 20542136" },
+                new { Id = 28, FullName = "Ira Callahan", Age = 22, Address = "115-730 Sodales St.", Phone = "(039391) 370272" },
+                new { Id = 29, FullName = "Driscoll N. Garner", Age = 30, Address = "P.O. Box 392, 2051 Risus. St.", Phone = "(034451) 701302" },
+                new { Id = 30, FullName = "Kermit B. Estes", Age = 19, Address = "P.O. Box 694, 1239 Consequat Rd.", Phone = "(0450) 24394797" },
+                new { Id = 31, FullName = "Ciara Y. Simmons", Age = 20, Address = "Ap #883-4050 Dignissim Rd.", Phone = "(038414) 990647" },
+                new { Id = 32, FullName = "Hasad Gamble", Age = 30, Address = "P.O. Box 162, 2096 Quis Street", Phone = "(0573) 30100416" },
+                new { Id = 33, FullName = "Alice I. Mckenzie", Age = 21, Address = "Ap #956-6158 Proin Rd.", Phone = "(033233) 394108" },
+                new { Id = 34, FullName = "Elizabeth P. Dickson", Age = 22, Address = "397-8448 Placerat. Road", Phone = "(044) 40146328" },
+                new { Id = 35, FullName = "Neil Quinn", Age = 20, Address = "P.O. Box 486, 197 Ridiculus Street", Phone = "(033251) 329050" },
+                new { Id = 36, FullName = "Daphne Y. Mckay", Age = 24, Address = "899-4118 Gravida Rd.", Phone = "(0225) 46452181" },
+                new { Id = 37, FullName = "Ralph W. Steele", Age = 18, Address = "P.O. Box 646, 7990 Fusce Ave", Phone = "(038411) 556609" },
+                new { Id = 38, FullName = "Adrienne Gonzalez", Age = 23, Address = "P.O. Box 845, 7179 Non, Rd.", Phone = "(061) 27473791" },
+                new { Id = 39, FullName = "Barclay U. Head", Age = 26, Address = "8014 Nullam Avenue", Phone = "(09788) 0572425" },
+                new { Id = 40, FullName = "Kiayada Bartlett", Age = 18, Address = "P.O. Box 177, 2348 Egestas Road", Phone = "(0042) 38330657" },
+                new { Id = 41, FullName = "Alan D. Vaughn", Age = 25, Address = "Ap #324-2318 Elit, Ave", Phone = "(035544) 655897" },
+                new { Id = 42, FullName = "Brianna Kaufman", Age = 25, Address = "8267 Primis Rd.", Phone = "(0736) 52167357" },
+                new { Id = 43, FullName = "Rhonda Bass", Age = 22, Address = "9136 Diam Avenue", Phone = "(036662) 533428" },
+                new { Id = 44, FullName = "Dahlia G. Mcbride", Age = 26, Address = "Ap #462-9853 Consectetuer Street", Phone = "(050) 71559178" },
+                new { Id = 45, FullName = "Howard K. Franklin", Age = 26, Address = "1428 Cursus Street", Phone = "(01221) 8813050" },
+                new { Id = 46, FullName = "Quin K. Fisher", Age = 25, Address = "131-6581 Urna Road", Phone = "(036652) 041044" },
+                new { Id = 47, FullName = "Lilah Ellis", Age = 18, Address = "P.O. Box 719, 9496 Nec, St.", Phone = "(030612) 679027" },
+                new { Id = 48, FullName = "Michael R. Lindsey", Age = 20, Address = "3860 Etiam St.", Phone = "(0786) 41008679" },
+                new { Id = 49, FullName = "Ivor L. William", Age = 26, Address = "631-1995 Massa. Rd.", Phone = "(032813) 434706" },
+                new { Id = 50, FullName = "Dakota Wolf", Age = 28, Address = "Ap #681-7811 At, Rd.", Phone = "(02463) 8097354" },
+                new { Id = 51, FullName = "Felicia E. George", Age = 23, Address = "524-1957 A Road", Phone = "(033169) 607604" },
+                new { Id = 52, FullName = "Barbara M. Melton", Age = 28, Address = "6292 Quam Road", Phone = "(07479) 8185744" },
+                new { Id = 53, FullName = "Ruth Figueroa", Age = 26, Address = "288-7392 Ipsum Ave", Phone = "(001) 28336651" },
+                new { Id = 54, FullName = "Dieter Douglas", Age = 22, Address = "P.O. Box 170, 3060 Ultrices. Road", Phone = "(031804) 655952" },
+                new { Id = 55, FullName = "Castor Holder", Age = 23, Address = "3491 Ultricies Road", Phone = "(055) 57504980" },
+                new { Id = 56, FullName = "Meghan X. Wynn", Age = 30, Address = "Ap #615-6233 Eu Road", Phone = "(0335) 82161509" },
+                new { Id = 57, FullName = "Cyrus S. Abbott", Age = 19, Address = "Ap #290-6048 Cubilia Avenue", Phone = "(090) 72281571" },
+                new { Id = 58, FullName = "Kimberly H. Donaldson", Age = 21, Address = "452-3010 Neque Street", Phone = "(026) 08427303" },
+                new { Id = 59, FullName = "Karleigh B. Livingston", Age = 29, Address = "P.O. Box 817, 4413 Nullam Av.", Phone = "(08311) 5989306" },
+                new { Id = 60, FullName = "Theodore Fitzgerald", Age = 30, Address = "857-1266 Nisl Street", Phone = "(0572) 61532694" },
+                new { Id = 61, FullName = "Ayanna V. Mcmillan", Age = 30, Address = "P.O. Box 288, 1875 Nunc Ave", Phone = "(06208) 9487111" },
+                new { Id = 62, FullName = "Palmer P. Guzman", Age = 29, Address = "Ap #709-7478 Fringilla Rd.", Phone = "(072) 97204208" },
+                new { Id = 63, FullName = "Noelani Finch", Age = 18, Address = "P.O. Box 954, 1592 Vitae Avenue", Phone = "(00797) 1621373" },
+                new { Id = 64, FullName = "Galvin Osborn", Age = 28, Address = "132-3358 Mauris St.", Phone = "(001) 55149533" },
+                new { Id = 65, FullName = "Jakeem F. Lane", Age = 21, Address = "4429 Elit Avenue", Phone = "(01949) 2399757" },
+                new { Id = 66, FullName = "Plato Payne", Age = 28, Address = "572-1206 Tristique St.", Phone = "(025) 34951826" },
+                new { Id = 67, FullName = "Emmanuel Lynn", Age = 25, Address = "Ap #523-7533 Tristique Road", Phone = "(030204) 313297" },
+                new { Id = 68, FullName = "Ahmed M. Workman", Age = 22, Address = "691-5673 Curabitur Road", Phone = "(074) 79607170" },
+                new { Id = 69, FullName = "Jenna X. Cain", Age = 24, Address = "902-6972 Feugiat St.", Phone = "(035911) 460192" },
+                new { Id = 70, FullName = "Veda J. Lindsay", Age = 19, Address = "620 Cursus, Avenue", Phone = "(0473) 21296423" },
+                new { Id = 71, FullName = "Donna Woodward", Age = 28, Address = "515-1080 Et Avenue", Phone = "(012) 52501714" },
+                new { Id = 72, FullName = "Price Grant", Age = 30, Address = "Ap #708-6948 Ante Ave", Phone = "(01773) 2688743" },
+                new { Id = 73, FullName = "Rowan Rios", Age = 28, Address = "369-813 Feugiat. Rd.", Phone = "(039368) 505528" },
+                new { Id = 74, FullName = "Lysandra U. Jones", Age = 28, Address = "Ap #740-319 Proin Avenue", Phone = "(066) 29320456" },
+                new { Id = 75, FullName = "Gisela Ortega", Age = 26, Address = "P.O. Box 706, 2647 Nam Rd.", Phone = "(0062) 27680382" },
+                new { Id = 76, FullName = "Ferdinand Spencer", Age = 18, Address = "P.O. Box 328, 3011 Adipiscing Road", Phone = "(030961) 630646" },
+                new { Id = 77, FullName = "Noelle W. Santiago", Age = 26, Address = "374-7007 Eu Avenue", Phone = "(087) 82821929" },
+                new { Id = 78, FullName = "Melanie U. Lambert", Age = 18, Address = "515-3258 Phasellus Street", Phone = "(0435) 83597756" },
+                new { Id = 79, FullName = "Burton E. Kaufman", Age = 22, Address = "429-5718 Gravida Ave", Phone = "(00411) 5330068" },
+                new { Id = 80, FullName = "Nevada X. Frederick", Age = 26, Address = "Ap #931-3912 Lacus, Rd.", Phone = "(00738) 3925747" },
+                new { Id = 81, FullName = "Ima R. Santana", Age = 19, Address = "Ap #909-1234 Elit Avenue", Phone = "(044) 55128034" },
+                new { Id = 82, FullName = "Ulysses Tyson", Age = 22, Address = "874-1601 Aliquam St.", Phone = "(03329) 7852326" },
+                new { Id = 83, FullName = "May Joyner", Age = 23, Address = "7895 Urna. St.", Phone = "(0062) 16762838" },
+                new { Id = 84, FullName = "Jakeem Holland", Age = 24, Address = "7485 Turpis Avenue", Phone = "(018) 41925211" },
+                new { Id = 85, FullName = "Kitra T. Haynes", Age = 23, Address = "Ap #106-6444 Mauris Rd.", Phone = "(035436) 907316" },
+                new { Id = 86, FullName = "Tanya Sampson", Age = 22, Address = "8535 Inceptos Rd.", Phone = "(07503) 3298471" },
+                new { Id = 87, FullName = "Francis Olson", Age = 23, Address = "113-4133 Fringilla Avenue", Phone = "(0287) 58732930" },
+                new { Id = 88, FullName = "Sophia Wise", Age = 22, Address = "P.O. Box 276, 5101 Felis. Street", Phone = "(034930) 219416" },
+                new { Id = 89, FullName = "Halla Soto", Age = 27, Address = "P.O. Box 263, 6542 Risus. Street", Phone = "(038347) 925068" },
+                new { Id = 90, FullName = "Bruce Dyer", Age = 28, Address = "838-4317 Et Avenue", Phone = "(07396) 9531508" },
+                new { Id = 91, FullName = "Quin Carver", Age = 21, Address = "P.O. Box 450, 418 Et St.", Phone = "(0656) 44248068" },
+                new { Id = 92, FullName = "Wade Lynch", Age = 24, Address = "808-2319 Ut Street", Phone = "(0952) 22992282" },
+                new { Id = 93, FullName = "Josiah W. Waller", Age = 27, Address = "Ap #969-4544 Pede. Avenue", Phone = "(038979) 643360" },
+                new { Id = 94, FullName = "Trevor J. Wheeler", Age = 19, Address = "715-3500 Arcu. Av.", Phone = "(070) 89818731" },
+                new { Id = 95, FullName = "Stacey Mcmillan", Age = 28, Address = "Ap #563-3440 Molestie St.", Phone = "(035252) 836785" },
+                new { Id = 96, FullName = "Chava Moon", Age = 21, Address = "Ap #884-7686 Blandit Rd.", Phone = "(032891) 199166" },
+                new { Id = 97, FullName = "Cecilia Joseph", Age = 26, Address = "P.O. Box 854, 8764 A Avenue", Phone = "(030830) 324640" },
+                new { Id = 98, FullName = "Reuben Bryan", Age = 21, Address = "754-6216 Sodales Av.", Phone = "(080) 95044686" },
+                new { Id = 99, FullName = "Barclay D. Pace", Age = 30, Address = "Ap #724-9249 Phasellus Street", Phone = "(0318) 50528490" },
+                new { Id = 100, FullName = "Prescott Albert", Age = 22, Address = "3552 Pretium St.", Phone = "(030786) 058443" }
+            };
+
+            var customers = new[] {
+                new { Id = 1, FullName = "Quin Burgess", Age = 27, Address = "516-4029 Tincidunt St.", Phone = "(037748) 759921" },
+                new { Id = 2, FullName = "Reuben Burch", Age = 26, Address = "938-9828 Et Rd.", Phone = "(00552) 6915990" },
+                new { Id = 3, FullName = "Rafael Q. Burris", Age = 25, Address = "2069 Enim. Rd.", Phone = "(0481) 44137231" },
+                new { Id = 4, FullName = "Lois S. Pena", Age = 18, Address = "Ap #197-5629 Gravida Av.", Phone = "(00065) 8659667" },
+                new { Id = 5, FullName = "Emi K. Bowman", Age = 22, Address = "250 Enim, Ave", Phone = "(0683) 86447156" },
+                new { Id = 6, FullName = "Sage Y. Price", Age = 27, Address = "194-1740 Sociis Av.", Phone = "(093) 04402343" },
+                new { Id = 7, FullName = "Lavinia Dalton", Age = 18, Address = "P.O. Box 657, 6834 Vitae Rd.", Phone = "(0856) 79243614" },
+                new { Id = 8, FullName = "Denise Jacobson", Age = 24, Address = "P.O. Box 367, 738 Odio. Avenue", Phone = "(081) 77264874" },
+                new { Id = 9, FullName = "Kaden York", Age = 23, Address = "P.O. Box 275, 6088 Vel Road", Phone = "(08501) 7993718" },
+                new { Id = 10, FullName = "Cecilia J. Bennett", Age = 24, Address = "978-8163 Sed Rd.", Phone = "(016) 38431760" },
+                new { Id = 11, FullName = "Taylor C. Sims", Age = 18, Address = "Ap #316-1685 Aenean Av.", Phone = "(05516) 4092482" },
+                new { Id = 12, FullName = "Megan Z. Gutierrez", Age = 18, Address = "579-7216 Dolor Rd.", Phone = "(037748) 597937" },
+                new { Id = 13, FullName = "Tad Z. Shaw", Age = 24, Address = "735-2409 Porttitor Street", Phone = "(06227) 0071764" },
+                new { Id = 14, FullName = "Haley Grant", Age = 18, Address = "Ap #664-2515 Scelerisque St.", Phone = "(0521) 92293494" },
+                new { Id = 15, FullName = "Martena F. Patrick", Age = 29, Address = "Ap #578-6615 Faucibus Av.", Phone = "(055) 82931350" },
+                new { Id = 16, FullName = "Francesca R. Bradley", Age = 18, Address = "3856 Tempus St.", Phone = "(0376) 58018494" },
+                new { Id = 17, FullName = "Leigh Flowers", Age = 18, Address = "9504 Donec St.", Phone = "(025) 78467797" },
+                new { Id = 18, FullName = "Kasper Nieves", Age = 26, Address = "2196 Elementum Rd.", Phone = "(009) 65010471" },
+                new { Id = 19, FullName = "Lysandra Kemp", Age = 29, Address = "P.O. Box 308, 8907 Vehicula Road", Phone = "(037260) 706164" },
+                new { Id = 20, FullName = "Dacey Garner", Age = 19, Address = "P.O. Box 333, 5550 Egestas, Road", Phone = "(056) 13785564" },
+                new { Id = 21, FullName = "Luke Rodriguez", Age = 18, Address = "P.O. Box 723, 4492 Sit St.", Phone = "(0386) 21111853" },
+                new { Id = 22, FullName = "Mollie Floyd", Age = 18, Address = "Ap #231-3723 Congue Road", Phone = "(030229) 835581" },
+                new { Id = 23, FullName = "Jessamine H. Greene", Age = 25, Address = "6508 Mattis Avenue", Phone = "(036051) 305970" },
+                new { Id = 24, FullName = "Maxwell B. Howard", Age = 24, Address = "603-544 Cras Rd.", Phone = "(047) 90747029" },
+                new { Id = 25, FullName = "Carlos W. Rosa", Age = 25, Address = "Ap #369-5260 Nam St.", Phone = "(06624) 7709595" },
+                new { Id = 26, FullName = "Anthony L. Velasquez", Age = 27, Address = "P.O. Box 244, 2405 Fusce St.", Phone = "(04292) 9587415" },
+                new { Id = 27, FullName = "Simone E. Wallace", Age = 28, Address = "376-6806 Nisl Av.", Phone = "(0159) 49110641" },
+                new { Id = 28, FullName = "Dai F. Crane", Age = 29, Address = "P.O. Box 332, 3520 Malesuada Street", Phone = "(0823) 23261928" },
+                new { Id = 29, FullName = "Portia Rasmussen", Age = 27, Address = "Ap #552-3161 Blandit. St.", Phone = "(03653) 0929746" },
+                new { Id = 30, FullName = "Hilary Carver", Age = 18, Address = "447-2788 Nulla Rd.", Phone = "(031917) 721441" },
+                new { Id = 31, FullName = "Willa White", Age = 29, Address = "408-3870 Amet St.", Phone = "(05560) 6537522" },
+                new { Id = 32, FullName = "Ann U. Lara", Age = 29, Address = "Ap #966-6243 Ut, Av.", Phone = "(031615) 100853" },
+                new { Id = 33, FullName = "Beau Nicholson", Age = 28, Address = "P.O. Box 414, 8934 Elit Rd.", Phone = "(0152) 74957592" },
+                new { Id = 34, FullName = "Leilani P. Donovan", Age = 21, Address = "P.O. Box 877, 971 Dapibus Rd.", Phone = "(00981) 4869231" },
+                new { Id = 35, FullName = "Carly Dawson", Age = 20, Address = "Ap #157-1976 Volutpat St.", Phone = "(075) 97245280" },
+                new { Id = 36, FullName = "Carol D. Sanford", Age = 29, Address = "Ap #113-8327 Sem, Street", Phone = "(049) 70888774" },
+                new { Id = 37, FullName = "Avye Q. Brown", Age = 25, Address = "P.O. Box 690, 1718 Vel Rd.", Phone = "(029) 58465200" },
+                new { Id = 38, FullName = "Mark Willis", Age = 23, Address = "156-9960 Vel, Avenue", Phone = "(031995) 615937" },
+                new { Id = 39, FullName = "Jeremy E. Burke", Age = 27, Address = "4964 Eu Rd.", Phone = "(035222) 292725" },
+                new { Id = 40, FullName = "Shafira I. Cardenas", Age = 25, Address = "1778 Ut St.", Phone = "(036851) 603617" },
+                new { Id = 41, FullName = "Basil A. Hudson", Age = 24, Address = "9643 Eget, Street", Phone = "(04695) 1476722" },
+                new { Id = 42, FullName = "Silas E. Compton", Age = 30, Address = "P.O. Box 629, 3268 Sem Road", Phone = "(031017) 697318" },
+                new { Id = 43, FullName = "Mariam W. Sims", Age = 23, Address = "Ap #828-5730 Sed Ave", Phone = "(033581) 472136" },
+                new { Id = 44, FullName = "Ray Ward", Age = 18, Address = "251-3054 Diam St.", Phone = "(0400) 03669254" },
+                new { Id = 45, FullName = "Mary Klein", Age = 28, Address = "Ap #871-1554 Ac Street", Phone = "(067) 63090889" },
+                new { Id = 46, FullName = "Benjamin H. Mullen", Age = 24, Address = "Ap #331-7319 Nulla Road", Phone = "(0719) 84015704" },
+                new { Id = 47, FullName = "Harding Clay", Age = 19, Address = "1919 Ac Rd.", Phone = "(037002) 854225" },
+                new { Id = 48, FullName = "Fletcher Black", Age = 21, Address = "737-1717 Ligula Street", Phone = "(030700) 109961" },
+                new { Id = 49, FullName = "Shelly F. Snider", Age = 27, Address = "194-3726 Nec Avenue", Phone = "(0904) 12975332" },
+                new { Id = 50, FullName = "Cora B. Joseph", Age = 20, Address = "P.O. Box 187, 9574 Dolor Street", Phone = "(0719) 73387617" },
+                new { Id = 51, FullName = "Maya D. William", Age = 29, Address = "4399 Nisl Road", Phone = "(096) 78254064" },
+                new { Id = 52, FullName = "Blaze Y. Henson", Age = 27, Address = "P.O. Box 219, 3496 Quam. Rd.", Phone = "(0686) 39779853" },
+                new { Id = 53, FullName = "Brielle C. Harding", Age = 28, Address = "286-4833 Nunc Rd.", Phone = "(033668) 144743" },
+                new { Id = 54, FullName = "Zahir Macias", Age = 19, Address = "P.O. Box 630, 4983 Vitae Avenue", Phone = "(0259) 77143204" },
+                new { Id = 55, FullName = "Melanie T. Mercer", Age = 25, Address = "Ap #948-8883 Sed Road", Phone = "(032186) 393504" },
+                new { Id = 56, FullName = "Alexa Craig", Age = 20, Address = "Ap #180-6682 Ligula. Av.", Phone = "(04216) 6154816" },
+                new { Id = 57, FullName = "Rogan K. Peters", Age = 19, Address = "P.O. Box 575, 3254 Fames Street", Phone = "(030107) 501846" },
+                new { Id = 58, FullName = "Wang Oconnor", Age = 30, Address = "435-9615 Libero Road", Phone = "(052) 95543575" },
+                new { Id = 59, FullName = "Penelope L. Shaffer", Age = 23, Address = "1554 Et Rd.", Phone = "(09051) 2649091" },
+                new { Id = 60, FullName = "Xandra Barrett", Age = 22, Address = "P.O. Box 347, 8589 Faucibus Rd.", Phone = "(095) 38433058" },
+                new { Id = 61, FullName = "Maxwell Espinoza", Age = 28, Address = "1934 Sociis Ave", Phone = "(07606) 2303994" },
+                new { Id = 62, FullName = "Adena Terrell", Age = 24, Address = "9666 Turpis. Road", Phone = "(090) 91965706" },
+                new { Id = 63, FullName = "Donna Miles", Age = 24, Address = "157-1769 Natoque Rd.", Phone = "(0635) 90649721" },
+                new { Id = 64, FullName = "Rahim Austin", Age = 21, Address = "974-8231 Sit St.", Phone = "(070) 75643173" },
+                new { Id = 65, FullName = "Phillip B. Walker", Age = 29, Address = "542-8431 Quisque St.", Phone = "(04065) 7831454" },
+                new { Id = 66, FullName = "Griffin Allen", Age = 21, Address = "Ap #722-2515 In Rd.", Phone = "(03026) 8652320" },
+                new { Id = 67, FullName = "Ciaran Bailey", Age = 27, Address = "402-6220 Ante Av.", Phone = "(035643) 795892" },
+                new { Id = 68, FullName = "Sylvia Camacho", Age = 25, Address = "128-3954 Donec Road", Phone = "(0620) 39517237" },
+                new { Id = 69, FullName = "Zelda X. Kemp", Age = 22, Address = "964-9485 Justo. St.", Phone = "(0478) 25293567" },
+                new { Id = 70, FullName = "Camilla Lester", Age = 21, Address = "681-6261 Aliquet Street", Phone = "(034) 04880388" },
+                new { Id = 71, FullName = "Jorden U. Bishop", Age = 21, Address = "Ap #445-2582 Massa. St.", Phone = "(09663) 1410658" },
+                new { Id = 72, FullName = "Chava A. Austin", Age = 25, Address = "5711 Gravida Rd.", Phone = "(038436) 438800" },
+                new { Id = 73, FullName = "Dylan Donovan", Age = 18, Address = "4576 Risus. St.", Phone = "(093) 90433140" },
+                new { Id = 74, FullName = "Katelyn Snyder", Age = 22, Address = "P.O. Box 431, 6382 Fusce Ave", Phone = "(00402) 1572370" },
+                new { Id = 75, FullName = "Paki K. Hobbs", Age = 26, Address = "Ap #124-4918 Velit Ave", Phone = "(06497) 2095440" },
+                new { Id = 76, FullName = "Adam Lindsay", Age = 30, Address = "P.O. Box 785, 5627 Malesuada St.", Phone = "(0825) 18226148" },
+                new { Id = 77, FullName = "Kevyn Guerrero", Age = 25, Address = "Ap #449-6047 Nulla Street", Phone = "(037919) 871186" },
+                new { Id = 78, FullName = "Christine Garrison", Age = 28, Address = "1294 Congue, Av.", Phone = "(07242) 4985420" },
+                new { Id = 79, FullName = "Imogene B. Johnson", Age = 23, Address = "9428 Praesent Avenue", Phone = "(06608) 5122603" },
+                new { Id = 80, FullName = "Lydia Pacheco", Age = 29, Address = "725-6352 Morbi Ave", Phone = "(06797) 5727900" },
+                new { Id = 81, FullName = "Raphael W. Collier", Age = 25, Address = "P.O. Box 983, 4153 Nibh Av.", Phone = "(0017) 66341507" },
+                new { Id = 82, FullName = "Beau Harris", Age = 22, Address = "Ap #565-2236 Curabitur Ave", Phone = "(063) 77531551" },
+                new { Id = 83, FullName = "Hunter K. Preston", Age = 29, Address = "Ap #937-9967 Dignissim Av.", Phone = "(0517) 20870955" },
+                new { Id = 84, FullName = "Moses Anderson", Age = 19, Address = "P.O. Box 310, 9656 Ligula Av.", Phone = "(0595) 97127578" },
+                new { Id = 85, FullName = "Daria I. Carson", Age = 30, Address = "9356 Leo. Av.", Phone = "(030495) 508797" },
+                new { Id = 86, FullName = "Bradley D. Owens", Age = 19, Address = "1067 Eget Av.", Phone = "(044) 79681350" },
+                new { Id = 87, FullName = "Colette Z. Schneider", Age = 27, Address = "Ap #206-4536 Ante Ave", Phone = "(086) 03100250" },
+                new { Id = 88, FullName = "Maya Delgado", Age = 25, Address = "2687 Rhoncus. Av.", Phone = "(01089) 7374931" },
+                new { Id = 89, FullName = "Chancellor V. Ayala", Age = 26, Address = "8822 Ut, Street", Phone = "(038) 45999134" },
+                new { Id = 90, FullName = "Cara Mcdaniel", Age = 29, Address = "7922 Commodo Ave", Phone = "(03338) 1106168" },
+                new { Id = 91, FullName = "Zia Mercado", Age = 23, Address = "595-5683 Auctor Ave", Phone = "(0656) 55956993" },
+                new { Id = 92, FullName = "Amela T. Poole", Age = 24, Address = "Ap #876-1961 Nunc Ave", Phone = "(065) 23388051" },
+                new { Id = 93, FullName = "Malik Garza", Age = 30, Address = "809-8422 Velit Ave", Phone = "(0328) 24978265" },
+                new { Id = 94, FullName = "Jerome Tyson", Age = 29, Address = "Ap #563-3005 Aenean Av.", Phone = "(030944) 526232" },
+                new { Id = 95, FullName = "Marshall Mcdonald", Age = 26, Address = "385-7357 Sem St.", Phone = "(08024) 1783247" },
+                new { Id = 96, FullName = "Jayme Ware", Age = 24, Address = "8495 Quis Rd.", Phone = "(049) 10239483" },
+                new { Id = 97, FullName = "Charles R. Ball", Age = 24, Address = "988-4506 Odio. Rd.", Phone = "(032862) 581489" },
+                new { Id = 98, FullName = "Lamar V. Levy", Age = 24, Address = "949-5342 Nulla. St.", Phone = "(00977) 8000622" },
+                new { Id = 99, FullName = "Leroy N. Pruitt", Age = 26, Address = "Ap #286-584 Lectus St.", Phone = "(0659) 53168810" },
+                new { Id = 100, FullName = "Hiram Z. Sawyer", Age = 21, Address = "Ap #295-3538 Fringilla St.", Phone = "(04652) 0617315" }
+            };
+
             #region Customer
             DataTable customer = new DataTable("Customer");
             DataColumn customerId = new DataColumn("Id");
@@ -370,11 +577,8 @@ namespace OnlineStore
             customer.Columns.Add(customerAddress);
             customer.Columns.Add(customerPhone);
 
-            // DataRow firstRow = customer.NewRow();
+            // customer.PrimaryKey = customerId;
 
-            // firstRow.BeginEdit();
-            // firstRow.ItemArray = new object[] { 1, "P.P.Kirsanov", 42 };
-            // firstRow.EndEdit();
             dataSet.Tables.Add(customer);
             #endregion
 
@@ -404,6 +608,9 @@ namespace OnlineStore
             employee.Columns.Add(employeeAge);
             employee.Columns.Add(employeeAddress);
             employee.Columns.Add(employeePhone);
+
+            //            employee.PrimaryKey = employeeId.;
+
             dataSet.Tables.Add(employee);
             #endregion
 
@@ -428,6 +635,7 @@ namespace OnlineStore
 
             dataSet.Tables.Add(cart);
 
+            // cart.PrimaryKey = cartId;
             DataRelation cartCustomerIdRelation = new DataRelation("FK_cart_CustomerId", customerId, cartCustomerId);
             #endregion
 
@@ -699,7 +907,204 @@ namespace OnlineStore
             DataRelation transactionTransactionStatusIdRelation = new DataRelation("FK_transaction_StatusId", transactionStatusId, transactionTransactionStatusId);
             #endregion
 
+            foreach (var item in customers)
+                customer.Rows.Add(new object[] { item.Id, item.FullName, item.Age, item.Address, item.Phone });
+
+            foreach (var item in employees)
+                employee.Rows.Add(new object[] { item.Id, item.FullName, item.Age, item.Address, item.Phone });
+
+            foreach (var item in categories)
+                category.Rows.Add(new object[] { item.Id, item.Name });
+
+            foreach (var item in manufacturers)
+                category.Rows.Add(new object[] { item.Id, item.Name });
+
+            foreach (var item in goods)
+                good.Rows.Add(new object[] { item.Id, item.Name, item.ManufacturerId, item.CategoryId, item.Description, item.Price });
+
             return dataSet;
+        }
+        
+        static void InsertToCart(DataSet dataSet, int goodsId, int customersId)
+        {
+            int count = 0;
+            string countAsString = "";
+            while (!int.TryParse(countAsString, out count))
+            {
+                Console.Write("Выберите кол-во: ");
+                countAsString = Console.ReadLine();
+                if (!int.TryParse(countAsString, out count))
+                    ParseError();
+                if ((count > 100) || (count < 1))
+                    IdError();
+            }
+            
+            dataSet.Tables["CartGood"].Rows.Add(new object[] {customersId, goodsId, count});
+            // foreach (var dt in dataSet.Tables)
+            // {
+            //     if (dt.TableName == "CartGood")
+            //     {
+            //         dt.Rows.Add(new object [] {customersId, goodsId, });
+            //     }  
+            // }
+            Console.WriteLine("Товар добавлен в корзину.");
+        }
+
+        static void SelectCustomer(DataSet dataSet, int Id)
+        {
+            Console.WriteLine("Клиент был выбран.");
+            dataSet.Tables["Cart"].Rows.Add(new object[] { Id, Id, 0 });
+            --Id;
+            Console.WriteLine("\t\t{0}\t\t{1}", dataSet.Tables["Customer"].Rows[Id].ItemArray[0], dataSet.Tables["Customer"].Rows[Id].ItemArray[1]);
+            Console.WriteLine("\t\t{0}\t\t{1}\t\t{2}", dataSet.Tables["Cart"].Rows[Id].ItemArray[0], dataSet.Tables["Cart"].Rows[Id].ItemArray[1], dataSet.Tables["Cart"].Rows[Id].ItemArray[2]);
+            // foreach (var dt in dataSet.Tables)
+            // {
+            //     foreach (var row in dt.Rows)
+            //     {
+            //         if (dataSet.Tables["Customer"].Rows[i].ItemArray[0] == Id)
+            //         {
+            //             Console.WriteLine("\t\t{0}\t\t{1}", dataSet.Tables[0].Rows[Id].ItemArray[0], dataSet.Tables[0].Rows[Id].ItemArray[1]);
+            //         }
+            //     }
+            // }
+            // foreach (var dt in dataSet.Tables)
+            // {
+            //     if (dt.TableName == "Cart")
+            //         dt.Rows.Add(new object[] {Id, Id, 0});
+            // }
+        }
+        
+        static void ParseError()
+        {
+            Console.WriteLine("Введите число.");
+        }
+
+        static void IdError()
+        {
+            Console.WriteLine("Число должно быть больше 0 и меньше/равно 100.");
+        }
+
+        static int CustomersList(DataSet dataSet)
+        {
+            foreach (DataTable dt in dataSet.Tables)
+            {
+                if (dt.TableName == "Customer")
+                {
+                    Console.WriteLine(dt.TableName); // название таблицы
+
+                    foreach (DataColumn column in dt.Columns)
+                        if ((column.ColumnName == "Id") || (column.ColumnName == "FullName"))
+                            Console.Write("\t\t{0}", column.ColumnName);
+                    Console.WriteLine();
+                    for (int i = 0; i < dt.Rows.Count / 10; i++)
+                    {
+                        Console.WriteLine("\t\t{0}\t\t{1}", dt.Rows[i].ItemArray[0], dt.Rows[i].ItemArray[1]);
+                    }
+                }
+            }
+            string customersIdAsString = "";
+            int customersId = 0;
+            Console.WriteLine("Заменил ввод данных клиента выбором клиента. То есть данные теперь не вводим [они лежат в бд], а выбираем.");
+            while (!int.TryParse(customersIdAsString, out customersId))
+            {
+                Console.Write("Выберите клиента по Id: ");
+                customersIdAsString = Console.ReadLine();
+                if (!int.TryParse(customersIdAsString, out customersId))
+                    ParseError();
+                if ((customersId > 100) || (customersId < 1))
+                    IdError();
+            }
+            SelectCustomer(dataSet, customersId);
+            return customersId;
+        }
+
+        static void GoodsList(DataSet dataSet, int customersId)
+        {
+            foreach (DataTable dt in dataSet.Tables)
+            {
+                if (dt.TableName == "Good")
+                {
+                    Console.WriteLine(dt.TableName); // название таблицы
+
+                    foreach (DataColumn column in dt.Columns)
+                        if ((column.ColumnName == "Id") || (column.ColumnName == "Name") || (column.ColumnName == "Price"))
+                            Console.Write("\t\t{0}", column.ColumnName);
+                    Console.WriteLine();
+                    for (int i = 0; i < dt.Rows.Count; i++)
+                    {
+                        Console.WriteLine("\t\t{0}\t\t{1}\t\t{2}", dt.Rows[i].ItemArray[0], dt.Rows[i].ItemArray[1], dt.Rows[i].ItemArray[5]);
+                    }
+                }
+            }
+            string goodsIdAsString = "";
+            int goodsId = 0;
+            while (!int.TryParse(goodsIdAsString, out goodsId))
+            {
+                Console.Write("Выберите товар по Id: ");
+                goodsIdAsString = Console.ReadLine();
+                if (!int.TryParse(goodsIdAsString, out goodsId))
+                    ParseError();
+                if ((goodsId > 100) || (goodsId < 1))
+                    IdError();
+            }
+            InsertToCart(dataSet, goodsId, customersId);
+        }
+
+        static void CartList(DataSet dataSet, int customersId)
+        {
+            Console.Write("Посмотреть Корзину - 1");
         }
     }
 }
+
+#region Составной Первичный ключ
+// private void SetPrimaryKeys()
+// {
+//     // Create a new DataTable and set two DataColumn objects as primary keys.
+//     DataTable table = new DataTable();
+//     DataColumn[] keys = new DataColumn[2];
+//     DataColumn column;
+
+//     // Create column 1.
+//     column = new DataColumn();
+//     column.DataType = System.Type.GetType("System.String");
+//     column.ColumnName= "FirstName";
+
+//     // Add the column to the DataTable.Columns collection.
+//     table.Columns.Add(column);
+
+//     // Add the column to the array.
+//     keys[0] = column;
+
+//     // Create column 2 and add it to the array.
+//     column = new DataColumn();
+//     column.DataType = System.Type.GetType("System.String");
+//     column.ColumnName = "LastName";
+//     table.Columns.Add(column);
+
+//     // Add the column to the array.
+//     keys[1] = column;
+
+//     // Set the PrimaryKeys property to the array.
+//     table.PrimaryKey = keys;
+// }
+#endregion
+
+#region BegindEdit
+// DataRow goodsRow;
+// DataRow categoriesRow;
+
+
+// goodsRow = good.NewRow();
+// goodsRow["Id"] = item.Id;
+// goodsRow["Name"] = item.Name;
+// goodsRow["ManufacturerId"] = item.ManufacturerId;
+// goodsRow["CategoryId"] = item.CategoryId;
+// goodsRow["Description"] = item.Description;
+// goodsRow["Price"] = item.Price;
+// good.Rows.Add(goodsRow);
+
+// goodsRow.BeginEdit();
+// goodsRow.ItemArray = new object[] { item.Id, "P.P.Kirsanov", 42 };
+// goodsRow.EndEdit();
+#endregion
