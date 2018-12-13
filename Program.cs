@@ -940,6 +940,7 @@ namespace OnlineStore
             }
 
             dataSet.Tables["CartGood"].Rows.Add(new object[] { customersId, goodsId, count });
+            //dataSet.AcceptChanges();
             // foreach (var dt in dataSet.Tables)
             //     if (dt.TableName == "CartGood")
             //         dt.Rows.Add(new object [] {customersId, goodsId, });
@@ -954,7 +955,7 @@ namespace OnlineStore
             }
             dataSet.Tables["Cart"].Rows[customerIndex].ItemArray[2] = sum;
 
-            var goodsName= dataSet.Tables["Good"];
+            var goodsName = dataSet.Tables["Good"];
             var goodsValue = dataSet.Tables["Good"].Rows[goodIndex].ItemArray;
             Console.WriteLine("Товар добавлен в корзину.");
             for (int i = 0; i < goodsValue.Length; i++)
@@ -1065,11 +1066,14 @@ namespace OnlineStore
 
         static void CartList(DataSet dataSet, int customersId)
         {
-            Console.Write("Посмотреть Корзину - 1");
+            Console.WriteLine("\n\t - - - Смотрим что лежит в Корзине - - -");
             //dataSet.Tables["Cart"].
             IList<int> cartsIds = null;
             IList<int> goodsIds = null;
-            IList<int> goodCount = null;
+            IList<int> goodsCount = null;
+            IList<int> goodsPrice = null;
+            IList<int> sum = null;
+
             foreach (DataTable dt in dataSet.Tables)
             {
                 if (dt.TableName == "CartGood")
@@ -1078,27 +1082,50 @@ namespace OnlineStore
                     {
                         //cartsIds.Add(int.Parse(dt.Rows[i].ItemArray[1].ToString()));
                         //goodsIds.Add(int.Parse(dt.Rows[i].ItemArray[2].ToString()));
-                        //goodCount.Add(int.Parse(dt.Rows[i].ItemArray[3].ToString()));
-                        //Console.WriteLine("\t\t{0}\t\t{1}\t\t{2}", dt.Rows[i].ItemArray[0], dt.Rows[i].ItemArray[1], dt.Rows[i].ItemArray[3]);
+                        //goodsCount.Add(int.Parse(dt.Rows[i].ItemArray[3].ToString()));
+                        Console.WriteLine("\t\t{0}\t\t{1}\t\t{2}", dt.Rows[i].ItemArray[1], dt.Rows[i].ItemArray[2], dt.Rows[i].ItemArray[3]);
                     }
                 }
+            }
 
-                if (dt.TableName == "Cart")
-                {
-                    Console.WriteLine(dt.TableName); // название таблицы
-
-                    foreach (DataColumn column in dt.Columns)
-                        if ((column.ColumnName == "Id") || (column.ColumnName == "Name") || (column.ColumnName == "Price"))
-                            Console.Write("\t\t{0}", column.ColumnName);
-                    Console.WriteLine();
-                }
-
+            foreach (DataTable dt in dataSet.Tables)
+            {
                 if (dt.TableName == "Goods")
                 {
                     for (int i = 0; i < dt.Rows.Count; i++)
                     {
                         Console.WriteLine("\t\t{0}\t\t{1}\t\t{2}", dt.Rows[i].ItemArray[0], dt.Rows[i].ItemArray[1], dt.Rows[i].ItemArray[5]);
+                        for (int j = 0; j < goodsIds.Count; j++)
+                        {
+                            goodsPrice[j] = (int)dt.Rows[goodsIds[j] - 1].ItemArray[5];
+                        }
+
                     }
+                }
+            }
+            int totalSum = 0;
+
+            for (int i = 0; i < goodsPrice.Count; i++)
+            {
+                sum.Add(goodsPrice[i]* goodsCount[i]);
+                totalSum += sum[i];
+            }
+
+            foreach (DataTable dt in dataSet.Tables)
+            {
+                if (dt.TableName == "Cart")
+                {
+                    Console.WriteLine(dt.TableName); // название таблицы
+
+                    foreach (DataColumn column in dt.Columns)
+                        if ((column.ColumnName == "Id") || (column.ColumnName == "CustomerId") || (column.ColumnName == "TotalSum"))
+                            Console.Write("\t\t{0}", column.ColumnName);
+                    for (int i = 0; i < cartsIds.Count; i++)
+                    {
+                        dt.Rows[cartsIds[i] - 1].ItemArray[2] = totalSum;
+                    }
+                    goodsCount[0] = (int)dt.Rows[customersId - 1].ItemArray[2];
+                    Console.WriteLine();
                 }
             }
         }

@@ -10,3 +10,4 @@ C:\Users\chert\Documents\AdoNetPracticeOnlineStore\AdoNetPractice_OnlineStore\bi
 C:\Users\chert\Documents\AdoNetPracticeOnlineStore\AdoNetPractice_OnlineStore\obj\Debug\OnlineStore.csproj.CoreCompileInputs.cache
 C:\Users\chert\Documents\AdoNetPracticeOnlineStore\AdoNetPractice_OnlineStore\obj\Debug\OnlineStore.exe
 C:\Users\chert\Documents\AdoNetPracticeOnlineStore\AdoNetPractice_OnlineStore\obj\Debug\OnlineStore.pdb
+C:\Users\chert\Documents\AdoNetPracticeOnlineStore\AdoNetPractice_OnlineStore\obj\Debug\OnlineStore.csprojAssemblyReference.cache
