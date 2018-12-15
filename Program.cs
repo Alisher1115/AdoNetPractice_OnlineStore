@@ -27,40 +27,101 @@ namespace OnlineStore
             int customersId = CustomersList(dataSet);
             int key = 0;
             string keyAsString = "";
-            while (!int.TryParse(keyAsString, out key))
+            while (key != 4)
             {
-                Console.WriteLine("Выбрать товары - 1");
-                Console.WriteLine("Посмотреть Корзину - 2");
-                Console.WriteLine("Купить - 3");
-                Console.WriteLine("Введите команду: ");
-                keyAsString = Console.ReadLine();
-                if ((!int.TryParse(keyAsString, out key)) || (key < 1) || (key > 3))
+                while (!int.TryParse(keyAsString, out key))
                 {
-                    Console.WriteLine("\n\t --- Пожалуйста введите одну из вышеперечисленных команд ---");
-                }
-                else
-                {
-                    switch (key)
+                    Console.WriteLine("Перейти в меню товаров - 1");
+                    Console.WriteLine("Перейти в Корзину - 2");
+                    Console.WriteLine("Оформить заказ - 3");
+                    Console.WriteLine("Выйти из приложения - 4");
+                    Console.WriteLine("Введите команду: ");
+                    keyAsString = Console.ReadLine();
+                    if ((!int.TryParse(keyAsString, out key)) || (key < 1) || (key > 4))
                     {
-                        case 1:
-                            GoodsList(dataSet, customersId);
-                            break;
-                        case 2:
-                            CartList(dataSet, customersId);
-                            break;
-                        case 3:
-                            Buy(dataSet, customersId);
-                            break;
-                        default: break;
+                        Console.WriteLine("\n\t --- Пожалуйста введите одну из вышеперечисленных команд ---");
                     }
+                    else
+                    {
+                        switch (key)
+                        {
+                            case 1:
+                                GoodsList(dataSet, customersId);
+                                break;
+                            case 2:
+                                CartList(dataSet, customersId);
+                                break;
+                            case 3:
+                                Checkout(dataSet, customersId);
+                                break;
+                            default: break;
+                        }
+                    }
+                    keyAsString = "";
                 }
             }
             Console.ReadKey(true);
         }
 
-        static void Buy(DataSet dataSet, int customersId)
+        static void DeleteGood(DataSet dataSet, int customersId)
         {
+            string goodIdAsString = "";
+            while (int.TryParse(goodIdAsString, out int goodId))
+            {
+                Console.WriteLine("Введите Id товара, которое хотите удалить: ");
+                goodIdAsString = Console.ReadLine();
+                GetCartGoodRowsCollections(dataSet, customersId, out List<int> goodsIds, out List<int> goodsCount);
 
+                foreach (DataTable dt in dataSet.Tables)
+                {
+                    if (dt.TableName == "CartGood")
+                    {
+                        foreach (DataRow row in dt.Rows)
+                        {
+                            if ((int)row.ItemArray[1] == customersId)
+                            {
+                                for (int i = 0; i < goodsIds.Count; i++)
+                                {
+                                    if ((int)row.ItemArray[2] == goodsIds[i])
+                                    {
+                                        foreach (DataTable goodDataTable in dataSet.Tables)
+                                        {
+                                            if (goodDataTable.TableName == "Good")
+                                            {
+                                                foreach (DataRow goodDataRow in goodDataTable.Rows)
+                                                {
+                                                    for (int j = 0; j < goodsIds.Count; j++)
+                                                    {
+                                                        if (goodsIds[j] == (int)goodDataRow.ItemArray[0])
+                                                        {
+                                                            Console.WriteLine($"Товар: {goodDataRow.ItemArray[1]} был успешно удален.");
+                                                            row.Delete();
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //Метод оформления заказа
+        static void Checkout(DataSet dataSet, int customersId)
+        {
+            ClearCart(dataSet);
+            //if cart==null then cart is empty 
+            Console.WriteLine("Заказ оформлен.");
+        }
+
+        //Метод очистки Корзины
+        static void ClearCart(DataSet dataSet)
+        {
+            dataSet.Tables["Cart"].Clear();
         }
 
         //Метод устанавливающий тестовые значения
@@ -979,25 +1040,24 @@ namespace OnlineStore
 
             SetCartCommonSum(dataSet, customersId);
 
-            Console.WriteLine("Товар добавлен в корзину.");
+            Console.WriteLine("\n \t --- Товар добавлен в корзину --- \n");
         }
 
         //Метод записывающий общую сумму в Корзину
         static void SetCartCommonSum(DataSet dataSet, int customersId)
         {
-            //List<int> cartsIds = new List<int>();
-            List<int> goodsIds;
-            List<int> goodsCount;
-            List<int> goodsPrice;
+            //List<int> goodsIds;
+            //List<int> goodsCount;
+            //List<int> goodsPrice;
             List<int> sum = new List<int>();
             int commonSum = 0;
 
             //Записываем все поля с Таблицы CartGood, которая связывает Корзину и Товары с учетом Id Клиента
-            GetCartGoodRowsCollections(dataSet, customersId, out goodsIds, out goodsCount);
+            GetCartGoodRowsCollections(dataSet, customersId, out List<int> goodsIds, out List<int> goodsCount);
 
             //Записываем все цены с таблицы Good, кол-во товаров соответствует размеру коллекции
-            GetGoodsPriceCollection(dataSet, goodsIds, out goodsPrice);
-            
+            GetGoodsPriceCollection(dataSet, goodsIds, out List<int> goodsPrice);
+
             //Устанаваливаем общую сумму
             for (int i = 0; i < goodsIds.Count; i++)
             {
@@ -1040,7 +1100,7 @@ namespace OnlineStore
             }
         }
 
-        //Метод записывающий все цены с учетом Id Товаров
+        //Метод записывающий все цены товаров с учетом Id
         static void GetGoodsPriceCollection(DataSet dataSet, List<int> goodsIds, out List<int> goodsPrice)
         {
             goodsPrice = new List<int>();
@@ -1059,13 +1119,13 @@ namespace OnlineStore
             }
         }
 
-        //Метод выбора клиентов
+        //Метод установки значений в корзину 
         static void SelectCustomer(DataSet dataSet, int Id)
         {
             dataSet.Tables["Cart"].Rows.Add(new object[] { Id, Id, 0 });
             --Id;
-            Console.WriteLine("\t\t{0}\t\t{1}", dataSet.Tables["Customer"].Rows[Id].ItemArray[0], dataSet.Tables["Customer"].Rows[Id].ItemArray[1]);
-            Console.WriteLine("\t\t{0}\t\t{1}\t\t{2}", dataSet.Tables["Cart"].Rows[Id].ItemArray[0], dataSet.Tables["Cart"].Rows[Id].ItemArray[1], dataSet.Tables["Cart"].Rows[Id].ItemArray[2]);
+            Console.WriteLine($"\tCustomerId: { dataSet.Tables["Customer"].Rows[Id].ItemArray[0]}\n\tCustomerName: {dataSet.Tables["Customer"].Rows[Id].ItemArray[1]}");
+            Console.WriteLine($"\tCartId: {dataSet.Tables["Cart"].Rows[Id].ItemArray[0]}\n\tCartCustomerId{dataSet.Tables["Cart"].Rows[Id].ItemArray[1]}\n\tCartTotalSum: {dataSet.Tables["Cart"].Rows[Id].ItemArray[2]}\n");
         }
 
         //Вывод ошибки при вводе символа
@@ -1074,13 +1134,13 @@ namespace OnlineStore
             Console.WriteLine("Введите число.");
         }
 
-        //Вывод ошибки при выходе за пределы Id 
+        //Вывод ошибки при выходе за пределы кол-во Id 
         static void IdError()
         {
             Console.WriteLine("Число должно быть больше 0 и меньше/равно 100.");
         }
 
-        //Метод печати клиентов и выбора клиента
+        //Метод  вывода на экран и выбора клиентов
         static int CustomersList(DataSet dataSet)
         {
             foreach (DataTable dt in dataSet.Tables)
@@ -1095,13 +1155,13 @@ namespace OnlineStore
                     Console.WriteLine();
                     for (int i = 0; i < dt.Rows.Count / 10; i++)
                     {
-                        Console.WriteLine("\t\t{0}\t\t{1}", dt.Rows[i].ItemArray[0], dt.Rows[i].ItemArray[1]);
+                        Console.WriteLine("\t\t{0}------------{1}", dt.Rows[i].ItemArray[0], dt.Rows[i].ItemArray[1]);
                     }
                 }
             }
             string customersIdAsString = "";
             int customersId = 0;
-            Console.WriteLine("Заменил ввод данных клиента выбором клиента.\nТо есть данные теперь не вводим [они лежат в бд], а выбираем.");
+            Console.WriteLine("\n\tЗаменил ввод данных клиента выбором клиента.\n\tТо есть данные теперь не вводим [они лежат в бд], а выбираем.\n");
             while (!int.TryParse(customersIdAsString, out customersId))
             {
                 Console.Write("Выберите клиента по Id: ");
@@ -1111,11 +1171,12 @@ namespace OnlineStore
                 if ((customersId > 100) || (customersId < 1))
                     IdError();
             }
-            Console.WriteLine("\n\t - - - Клиент был выбран - - -\n");
+            Console.WriteLine("\n\t - - - Клиент был выбран - - -");
             SelectCustomer(dataSet, customersId);
             return customersId;
         }
 
+        //Метод  вывода на экран и выбора товаров
         static void GoodsList(DataSet dataSet, int customersId)
         {
             foreach (DataTable dt in dataSet.Tables)
@@ -1138,7 +1199,7 @@ namespace OnlineStore
             int goodsId = 0;
             while (!int.TryParse(goodsIdAsString, out goodsId))
             {
-                Console.Write("Выберите товар по Id: ");
+                Console.Write("\nВыберите товар по Id: ");
                 goodsIdAsString = Console.ReadLine();
                 if (!int.TryParse(goodsIdAsString, out goodsId))
                     ParseError();
@@ -1148,18 +1209,16 @@ namespace OnlineStore
             InsertToCart(dataSet, goodsId, customersId);
         }
 
+        //Метод вывода на экран товаров в корзине
         static void CartList(DataSet dataSet, int customersId)
         {
             Console.WriteLine("\n\t - - - Смотрим что лежит в Корзине - - -");
-            List<int> goodsIds;
-            List<int> goodsCount;
-            List<int> goodsPrice;
 
             //Записываем все поля с Таблицы CartGood, которая связывает Корзину и Товары с учетом Id Клиента
-            GetCartGoodRowsCollections(dataSet, customersId, out goodsIds, out goodsCount);
+            GetCartGoodRowsCollections(dataSet, customersId, out List<int> goodsIds, out List<int> goodsCount);
 
             //Записываем все цены с таблицы Good, кол-во товаров соответствует размеру коллекции
-            GetGoodsPriceCollection(dataSet, goodsIds, out goodsPrice);
+            GetGoodsPriceCollection(dataSet, goodsIds, out List<int> goodsPrice);
 
             foreach (DataTable dt in dataSet.Tables)
             {
@@ -1174,6 +1233,38 @@ namespace OnlineStore
                                 Console.WriteLine($"\nGoodId: {dt.Rows[i].ItemArray[0]}\nGoodName: {dt.Rows[i].ItemArray[1]}\nGoodPrice: {dt.Rows[i].ItemArray[5]} x {goodsCount[j]} = {((int)dt.Rows[i].ItemArray[5] * goodsCount[j])}");
                             }
                         }
+                    }
+                }
+            }
+
+            string keyAsString = "";
+            while (!int.TryParse(keyAsString, out int key))
+            {
+                Console.WriteLine("\nОформить заказ - 1");
+                Console.WriteLine("Вернутся в Главное меню - 2");
+                Console.WriteLine("Удалить товар - 3");
+                Console.WriteLine("Очистить корзину - 4");
+                Console.WriteLine("Введите команду: ");
+                keyAsString = Console.ReadLine();
+                if ((!int.TryParse(keyAsString, out key)) || (key < 1) || (key > 4))
+                {
+                    Console.WriteLine("\n\t --- Пожалуйста введите одну из вышеперечисленных команд ---");
+                }
+                else
+                {
+                    switch (key)
+                    {
+                        case 1:
+                            Checkout(dataSet, customersId);
+                            break;
+                        case 2: break;
+                        case 3:
+                            DeleteGood(dataSet, customersId);
+                            break;
+                        case 4:
+                            ClearCart(dataSet);
+                            break;
+                        default: break;
                     }
                 }
             }
