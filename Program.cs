@@ -20,6 +20,13 @@ namespace OnlineStore
 {
     class Program
     {
+        static int OrderNumberKey;
+
+        static Program()
+        {
+            OrderNumberKey = 0;
+        }
+
         public static void Main(string[] args)
         {
             DataSet dataSet = new DataSet("OnlineStore");
@@ -32,12 +39,13 @@ namespace OnlineStore
                 while (!int.TryParse(keyAsString, out key))
                 {
                     Console.WriteLine("Перейти в меню товаров - 1");
-                    Console.WriteLine("Перейти в Корзину - 2");
+                    Console.WriteLine("Перейти в меню Корзины - 2");
                     Console.WriteLine("Оформить заказ - 3");
-                    Console.WriteLine("Выйти из приложения - 4");
+                    Console.WriteLine("Прочитать инструкцию об оплате - 4");
+                    Console.WriteLine("Выйти из приложения - 5");
                     Console.WriteLine("Введите команду: ");
                     keyAsString = Console.ReadLine();
-                    if ((!int.TryParse(keyAsString, out key)) || (key < 1) || (key > 4))
+                    if ((!int.TryParse(keyAsString, out key)) || (key < 1) || (key > 5))
                     {
                         Console.WriteLine("\n\t --- Пожалуйста введите одну из вышеперечисленных команд ---");
                     }
@@ -54,6 +62,12 @@ namespace OnlineStore
                             case 3:
                                 Checkout(dataSet, customersId);
                                 break;
+                            case 4:
+                                Instruction();
+                                break;
+                            case 5:
+                                Checkout(dataSet, customersId);
+                                break;
                             default: break;
                         }
                     }
@@ -66,7 +80,7 @@ namespace OnlineStore
         static void DeleteGood(DataSet dataSet, int customersId)
         {
             string goodIdAsString = "";
-            while (int.TryParse(goodIdAsString, out int goodId))
+            while (!int.TryParse(goodIdAsString, out int goodId))
             {
                 Console.WriteLine("Введите Id товара, которое хотите удалить: ");
                 goodIdAsString = Console.ReadLine();
@@ -96,11 +110,16 @@ namespace OnlineStore
                                                         {
                                                             Console.WriteLine($"Товар: {goodDataRow.ItemArray[1]} был успешно удален.");
                                                             row.Delete();
+                                                            return;
                                                         }
                                                     }
                                                 }
                                             }
                                         }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Этого товара нет в корзине!");
                                     }
                                 }
                             }
@@ -110,17 +129,117 @@ namespace OnlineStore
             }
         }
 
+        //Метод выбора способа оплаты
+        static void PickPaymentMethod()
+        {
+
+        }
+
         //Метод оформления заказа
         static void Checkout(DataSet dataSet, int customersId)
         {
-            ClearCart(dataSet);
-            //if cart==null then cart is empty 
+            if (IsEmptyCartGoodTable(dataSet, customersId))
+                return;
+
+            Instruction();
+            if (OrderNumberKey >= 20)
+            {
+                Console.WriteLine("Оформление заказа было отменено.");
+                Console.WriteLine("У вас максимальное количество единовременных заказов (20).");
+                return;
+            }
+            ++OrderNumberKey;
+            int orderId = customersId + 100000000 + OrderNumberKey;//Добавил ключ для заказа ...
+                                    //int max = 2 147 483 647
+
+            DataRow orderStatusNewRow = dataSet.Tables["OrderStatus"].NewRow();
+            orderStatusNewRow["OrderStatusName"] = "Заказ оформлен.";
+            dataSet.Tables["OrderStatus"].Rows.Add(orderStatusNewRow);
+
+            foreach (DataTable cartDataTable in dataSet.Tables)
+            {
+                if (cartDataTable.TableName == "Cart")
+                {
+                    foreach (DataRow row in cartDataTable.Rows)
+                    {
+                        if ((int)row.ItemArray[1] == customersId)
+                        {
+                            DataRow orderNewRow = dataSet.Tables["Order"].NewRow();
+                            orderNewRow["Id"] = orderId;
+                            orderNewRow["CustomerId"] = customersId;
+                            orderNewRow["EmployeeId"] = PickEmployee();
+                            orderNewRow["Date"] = DateTime.Now;
+                            orderNewRow["OrderStatusId"] = orderId;
+                            orderNewRow["Sum"] = row.ItemArray[2];
+                            dataSet.Tables["Order"].Rows.Add(orderNewRow);
+                        }
+                    }
+                }
+            }
+
+            //Получение Id и кол-ва каждого товара
+            GetCartGoodRowsCollections(dataSet, customersId, out List<int> goodsIds, out List<int> goodsCount);
+            for (int i = 0; i < goodsIds.Count; i++)
+            {
+                DataRow orderGoodNewRow = dataSet.Tables["OrderGood"].NewRow();
+                orderGoodNewRow["OrderId"] = orderId;
+                orderGoodNewRow["GoodId"] = goodsIds[i];
+                orderGoodNewRow["GoodCount"] = goodsCount[i];
+            }
+
+            ClearCart(dataSet, customersId);
             Console.WriteLine("Заказ оформлен.");
         }
 
-        //Метод очистки Корзины
-        static void ClearCart(DataSet dataSet)
+        //Вывод на экран статуса заказа
+        static void ShowOrderStatus()
         {
+
+        }
+
+        //Инструкция
+        static void Instruction()
+        {
+            Console.WriteLine("\nМы заботимся о наших клинтах.");
+            Console.WriteLine("Если вам не подошел/нравятся товар/товары,\nто можете откзатся от него/них, но в этом случае вам придется оплатить доставку.");
+            Console.WriteLine("При возврате 20% (или больше) товаров от общего кол-во, доставка оплачивается клиентом.");
+            //Console.WriteLine("Вам необходимо внести сумму доставки заранее, в случае отмена заказа во время ");
+            Console.WriteLine("Оплата производится наличными или карточкой.\n");
+        }
+
+        //Метод выбора курьера
+        static int PickEmployee()
+        {
+            Random random = new Random();
+            return random.Next(1, 100);
+        }
+
+        //Метод очистки Корзины с учетом Id клиента, чтобы не удалить данные относящиеся к другим пользователям
+        static void ClearCart(DataSet dataSet, int customersId)
+        {
+            foreach (DataTable dataTable in dataSet.Tables)
+            {
+                if (dataTable.TableName == "Cart")
+                {
+                    foreach (DataRow dataRow in dataTable.Rows)
+                    {
+                        if ((int)dataRow.ItemArray[1] == customersId)
+                        {
+                            dataRow.ItemArray[2] = 0;
+                        }
+                    }
+                }
+                else if (dataTable.TableName == "CartGood")
+                {
+                    foreach (DataRow dataRow in dataTable.Rows)
+                    {
+                        if ((int)dataRow.ItemArray[1] == customersId)
+                        {
+                            dataRow.Delete();
+                        }
+                    }
+                }
+            }
             dataSet.Tables["Cart"].Clear();
         }
 
@@ -1209,10 +1328,44 @@ namespace OnlineStore
             InsertToCart(dataSet, goodsId, customersId);
         }
 
+        //Метод проверяющий наличие товаров в корзине с учетом Id клиента
+        static bool IsEmptyCartGoodTable(DataSet dataSet, int customersId)
+        {
+            foreach (DataTable dataTable in dataSet.Tables)
+            {
+                if (dataTable.TableName == "CartGood")
+                {
+                    if (dataTable.Rows.Count == 0)
+                    {
+                        EmptyCartMessage();
+                        return true;
+                    }
+                    foreach (DataRow dataRow in dataTable.Rows)
+                    {
+                        if ((int)dataRow.ItemArray[1] == customersId)
+                        {
+                            EmptyCartMessage();
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        //Вывод на экран сообщения о пустой корзине
+        static void EmptyCartMessage()
+        {
+            Console.WriteLine("\n\t - - - Корзина пуста! - - -");
+            Console.WriteLine("\n\t - - - Выберите что-нибудь из списка товаров - - -\n");
+        }
+
         //Метод вывода на экран товаров в корзине
         static void CartList(DataSet dataSet, int customersId)
         {
             Console.WriteLine("\n\t - - - Смотрим что лежит в Корзине - - -");
+            if (IsEmptyCartGoodTable(dataSet, customersId))
+                return;
 
             //Записываем все поля с Таблицы CartGood, которая связывает Корзину и Товары с учетом Id Клиента
             GetCartGoodRowsCollections(dataSet, customersId, out List<int> goodsIds, out List<int> goodsCount);
@@ -1262,7 +1415,7 @@ namespace OnlineStore
                             DeleteGood(dataSet, customersId);
                             break;
                         case 4:
-                            ClearCart(dataSet);
+                            ClearCart(dataSet, customersId);
                             break;
                         default: break;
                     }

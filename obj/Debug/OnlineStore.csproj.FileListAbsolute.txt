@@ -4,9 +4,9 @@ C:\Users\admin\Documents\SharpDevelop Projects\OnlineStore\bin\Debug\OnlineStore
 C:\Users\admin\Documents\SharpDevelop Projects\OnlineStore\obj\Debug\OnlineStore.csprojResolveAssemblyReference.cache
 C:\Users\admin\Documents\SharpDevelop Projects\OnlineStore\obj\Debug\OnlineStore.exe
 C:\Users\admin\Documents\SharpDevelop Projects\OnlineStore\obj\Debug\OnlineStore.pdb
+C:\Users\chert\Documents\AdoNetPracticeOnlineStore\AdoNetPractice_OnlineStore\obj\Debug\OnlineStore.csproj.CoreCompileInputs.cache
 C:\Users\chert\Documents\AdoNetPracticeOnlineStore\AdoNetPractice_OnlineStore\bin\Debug\OnlineStore.exe.config
 C:\Users\chert\Documents\AdoNetPracticeOnlineStore\AdoNetPractice_OnlineStore\bin\Debug\OnlineStore.exe
 C:\Users\chert\Documents\AdoNetPracticeOnlineStore\AdoNetPractice_OnlineStore\bin\Debug\OnlineStore.pdb
-C:\Users\chert\Documents\AdoNetPracticeOnlineStore\AdoNetPractice_OnlineStore\obj\Debug\OnlineStore.csproj.CoreCompileInputs.cache
 C:\Users\chert\Documents\AdoNetPracticeOnlineStore\AdoNetPractice_OnlineStore\obj\Debug\OnlineStore.exe
 C:\Users\chert\Documents\AdoNetPracticeOnlineStore\AdoNetPractice_OnlineStore\obj\Debug\OnlineStore.pdb
