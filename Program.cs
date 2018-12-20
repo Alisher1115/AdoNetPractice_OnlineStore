@@ -67,7 +67,7 @@ namespace OnlineStore
                                 Instruction();
                                 break;
                             case 5:
-                                Checkout(dataSet, customersId);
+                                //Checkout(dataSet, customersId);
                                 break;
                             default: break;
                         }
@@ -654,7 +654,9 @@ namespace OnlineStore
             employee.Columns.Add(employeeAge);
             employee.Columns.Add(employeeAddress);
             employee.Columns.Add(employeePhone);
-
+            //Хороший был подход , сказать что мол сделашешь сама, но  в принципе можешь брать у меня проект,
+            //под подходом имел  ввиду что ты сказала чтоб Олег услышал, 
+            //ты серьзно хочешь сделать все сама?
             //            employee.PrimaryKey = employeeId.;
 
             dataSet.Tables.Add(employee);
@@ -1049,9 +1051,8 @@ namespace OnlineStore
 
             DataRow orderStatusNewRow = dataSet.Tables["OrderStatus"].NewRow();
             orderStatusNewRow["Id"] = orderId;
-            orderStatusNewRow["OrderStatusName"] = "Заказ оформлен";
+            orderStatusNewRow["OrderStatusName"] = "Заказ оформляется";
             dataSet.Tables["OrderStatus"].Rows.Add(orderStatusNewRow);
-
 
             foreach (DataTable cartDataTable in dataSet.Tables)
             {
@@ -1087,9 +1088,9 @@ namespace OnlineStore
                 dataSet.Tables["OrderGood"].Rows.Add(orderGoodNewRow);
             }
 
-            //ChangeOrderStatus(dataSet, orderId, "Заказ оформлен");
+            ChangeOrderStatus(dataSet, orderId, "Заказ оформлен");
             //Вывод на экран статуса
-            //ShowOrderStatus(dataSet, orderId);
+            ShowOrderStatus(dataSet, orderId);
 
             CourierMenu(dataSet, orderId);
 
@@ -1352,10 +1353,10 @@ namespace OnlineStore
                     {
                         if ((int)dataRow.ItemArray[0] == orderStatusId)
                         {
-                            //dataRow.BeginEdit();
-                            dataRow.ItemArray[1] = statusName;
-                            dataRow.AcceptChanges();
-                            //dataRow.EndEdit();
+                            dataRow.BeginEdit();
+                            dataRow[1] = statusName;
+                            //dataRow.AcceptChanges();
+                            dataRow.EndEdit();
                         }
                     }
                 }
@@ -1452,6 +1453,7 @@ namespace OnlineStore
             }
             EmptyOrderMessage();
         }
+
 
 
 
@@ -1599,6 +1601,8 @@ namespace OnlineStore
             cartNewRow["Id"] = customerId;
             cartNewRow["CustomerId"] = customerId;
             cartNewRow["TotalSum"] = 0;
+            dataSet.Tables["Cart"].Rows.Add(cartNewRow);
+
             //dataSet.Tables["Cart"].Rows.Add(new object[] { id, id, 0 });
             //--id;
             foreach (DataTable dataTable in dataSet.Tables)
