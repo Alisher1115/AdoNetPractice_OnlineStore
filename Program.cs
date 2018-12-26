@@ -27,7 +27,7 @@ namespace OnlineStore
             MainMenu(dataSet, customersId);
             Console.ReadKey(true);
         }
-        
+
         #region Установка тестовых данных, избрание клиента и связывание Корзину с Клиентом
 
         //Метод устанавливающий тестовые значения
@@ -2180,7 +2180,7 @@ namespace OnlineStore
             SelectCustomer(dataSet, customersId);
             return customersId;
         }
-        
+
         //Метод связывающий Корзину и Клиента
         static void SelectCustomer(DataSet dataSet, int customerId)
         {
@@ -2209,10 +2209,11 @@ namespace OnlineStore
                 }
             }
         }
-        
+
         #endregion
 
         #region Главное меню
+
         //     - - - Главное меню - - -
         static void MainMenu(DataSet dataSet, int customersId)
         {
@@ -2250,11 +2251,12 @@ namespace OnlineStore
                                 return;
                         }
                     }
+
                     keyAsString = "";
                 }
             }
         }
-        
+
         //Метод вывода на экран и выбора товаров
         static void GoodsList(DataSet dataSet, int customersId)
         {
@@ -2291,7 +2293,7 @@ namespace OnlineStore
 
             InsertToCart(dataSet, goodsId, customersId);
         }
-        
+
         //Инструкция к оплате
         static void Instruction()
         {
@@ -2303,9 +2305,11 @@ namespace OnlineStore
             //Console.WriteLine("Вам необходимо внести сумму доставки заранее, в случае отмена заказа во время ");
             Console.WriteLine("Оплата производится наличными или карточкой.\n");
         }
+
         #endregion
 
         #region Меню Корзины
+
         //     - - - Меню Корзины - - - 
         static void CartMenu(DataSet dataSet, int customersId)
         {
@@ -2370,7 +2374,7 @@ namespace OnlineStore
                 }
             }
         }
-        
+
         //Метод удаления товара из Корзины с учетом Id клиента
         static void DeleteCartGood(DataSet dataSet, int customersId)
         {
@@ -2424,7 +2428,7 @@ namespace OnlineStore
                 }
             }
         }
-        
+
         //Метод очистки Корзины с учетом Id клиента, чтобы не удалить данные относящиеся к другим пользователям
         static void ClearCart(DataSet dataSet, int customersId)
         {
@@ -2436,7 +2440,7 @@ namespace OnlineStore
                     {
                         if ((int) dataRow.ItemArray[1] == customersId)
                         {
-                            dataRow.ItemArray[2] = 0;
+                            dataRow[2] = 0;
                         }
                     }
                 }
@@ -2516,7 +2520,7 @@ namespace OnlineStore
                 dataSet.Tables["OrderGood"].Rows.Add(orderGoodNewRow);
             }
 
-            ChangeOrderStatus(dataSet, orderId, "Заказ оформлен");
+            ChangeOrderStatus(dataSet, orderId, "Заказ оформлен и будет доставлен");
             //Вывод на экран статуса
             ShowOrderStatus(dataSet, orderId);
 
@@ -2524,9 +2528,11 @@ namespace OnlineStore
 
             ClearCart(dataSet, customersId);
         }
+
         #endregion
-        
+
         #region Меню Курьера
+
         //     - - - Меню Курьера - - -
         static void CourierMenu(DataSet dataSet, int orderId)
         {
@@ -2578,9 +2584,6 @@ namespace OnlineStore
                             case 4:
                                 ClearOrder(dataSet, orderId);
                                 return;
-                            
-                                
-                            default: break;
                         }
                     }
 
@@ -2593,10 +2596,10 @@ namespace OnlineStore
         static void GetOrderGoods(DataSet dataSet, int orderId)
         {
             GetOrderGoodRowsCollections(dataSet, orderId, out List<int> goodsIds, out List<int> goodsCount);
-            
+
             Console.WriteLine("\n\t - - - Ваши товары - - -");
             Console.WriteLine($"Id\tНазвание\tЦена x кол-во = общая сумма");
-            
+
             foreach (DataTable goodDataTable in dataSet.Tables)
             {
                 if (goodDataTable.TableName == "Good")
@@ -2607,14 +2610,15 @@ namespace OnlineStore
                         {
                             if (goodsIds[i] == (int) goodDataRow.ItemArray[0])
                             {
-                                Console.WriteLine($"{goodDataRow.ItemArray[0]}\t{goodDataRow.ItemArray[1]}\t\t{goodDataRow.ItemArray[5]} x {goodsCount[i]} = {((int) goodDataRow.ItemArray[5] * goodsCount[i])}");
+                                Console.WriteLine(
+                                    $"{goodDataRow.ItemArray[0]}\t{goodDataRow.ItemArray[1]}\t\t{goodDataRow.ItemArray[5]} x {goodsCount[i]} = {((int) goodDataRow.ItemArray[5] * goodsCount[i])}");
                             }
                         }
                     }
                 }
             }
         }
-        
+
         //Метод Оплаты заказа
         static void PayOrder(DataSet dataSet, int orderId)
         {
@@ -2656,7 +2660,7 @@ namespace OnlineStore
                     {
                         if (orderId == (int) datarow.ItemArray[0])
                         {
-                            datarow.ItemArray[3] = commonSum;
+                            datarow[3] = commonSum;
                             datarow.AcceptChanges();
                             Console.WriteLine($"\n\t - - - Вы оплатили ${commonSum} - - -");
                             Console.WriteLine("\tСпасибо за покупку, до свидания!)");
@@ -2667,14 +2671,14 @@ namespace OnlineStore
             }
         }
 
-        //Метод удаления товара из Order с учетом Id
+        //Метод удаления товара из Order с учетом Id и кол-ва
         static void DeleteOrderGood(DataSet dataSet, int orderId)
         {
             if (IsEmptyOrderGoodTable(dataSet, orderId))
                 return;
 
-            string goodIdAsString, goodCountAsString;
-            goodIdAsString = goodCountAsString = "";
+            string goodCountAsString;
+            var goodIdAsString = goodCountAsString = "";
 
             GetOrderGoodRowsCollections(dataSet, orderId, out List<int> goodsIds, out List<int> goodsCount);
 
@@ -2683,7 +2687,7 @@ namespace OnlineStore
             bool otherGoodId = false;
             while (!int.TryParse(goodIdAsString, out int goodId))
             {
-                Console.Write("Введите Id товара, которое хотите удалить: ");
+                Console.Write("Введите Id товара, кол-во которого необходимо изменить в заказе: ");
                 goodIdAsString = Console.ReadLine();
 
                 if (!int.TryParse(goodIdAsString, out goodId))
@@ -2696,10 +2700,11 @@ namespace OnlineStore
                     {
                         if (goodsIds[id] == goodId)
                         {
+                            otherGoodId = false;
                             int currentGoodCount = goodsCount[id];
                             while (!int.TryParse(goodCountAsString, out int goodCount))
                             {
-                                Console.Write("\nВведите кол-во: ");
+                                Console.Write("\nУстановите кол-во товаров и оно не должно превышающать кол-во товаров настоящего заказа: ");
                                 goodCountAsString = Console.ReadLine();
                                 if (!int.TryParse(goodCountAsString, out goodCount))
                                 {
@@ -2713,7 +2718,7 @@ namespace OnlineStore
                                     }
                                     else if (goodCount < 1)
                                     {
-                                         Console.WriteLine("Число должно быть больше нуля.");
+                                        Console.WriteLine("Число должно быть больше нуля.");
                                     }
                                     else
                                     {
@@ -2723,7 +2728,8 @@ namespace OnlineStore
                                             {
                                                 foreach (DataRow row in dt.Rows)
                                                 {
-                                                    if (((int) row.ItemArray[1] == orderId) && ((int) row.ItemArray[2] == goodId))
+                                                    if (((int) row.ItemArray[1] == orderId) &&
+                                                        ((int) row.ItemArray[2] == goodId))
                                                     {
                                                         foreach (DataTable goodDataTable in dataSet.Tables)
                                                         {
@@ -2733,11 +2739,12 @@ namespace OnlineStore
                                                                 {
                                                                     for (int j = 0; j < goodsIds.Count; j++)
                                                                     {
-                                                                        if (goodsIds[j] == (int) goodDataRow.ItemArray[0])
+                                                                        if (goodsIds[j] ==
+                                                                            (int) goodDataRow.ItemArray[0])
                                                                         {
-                                                                            row.ItemArray[2] = (int)row.ItemArray[2] - goodCount;
-                                                                            Console.WriteLine($"{goodCount} товар(ов): {goodDataRow.ItemArray[1]} был(о) успешно удален(о).");
-                                                                            if ((int)row.ItemArray[2] == 0)
+                                                                            row[3] = goodCount;//ItemArray
+                                                                            Console.WriteLine($"Кол-во товар(ов): {goodDataRow.ItemArray[1]} был(о) успешно измене(о).");
+                                                                            if ((int) row.ItemArray[2] == 0)
                                                                             {
                                                                                 row.Delete();
                                                                             }
@@ -2746,8 +2753,7 @@ namespace OnlineStore
                                                                     }
                                                                 }
                                                             }
-                                                        }       
-//                                                      Console.WriteLine("Этого товара нет в списке!");
+                                                        }
                                                     }
                                                 }
                                             }
@@ -2757,13 +2763,13 @@ namespace OnlineStore
                             }
                             break;
                         }
-                    }  
+                        otherGoodId = true;
+                    }
+                    if (otherGoodId)
+                    {
+                        Console.WriteLine("\n\t - - - Этого товара нет в списке! - - -");
+                    }
                 }
-                
-                
-                
-
-                
             }
         }
 
@@ -2800,10 +2806,11 @@ namespace OnlineStore
 
             EmptyOrderMessage();
         }
+
         #endregion
 
         #region Методы методов Главного меню
-        
+
         //Метод устанавливающий кол-во товаров и добавляющий значения в таблицу CartGood, которая связывает Корзину с Товарами
         static void InsertToCart(DataSet dataSet, int goodsId, int customersId)
         {
@@ -2829,7 +2836,7 @@ namespace OnlineStore
 
             Console.WriteLine("\n \t --- Товар(ы) добавлен(ы) в корзину --- \n");
         }
-        
+
         //Метод записывающий общую сумму в Корзину
         static void SetCartCommonSum(DataSet dataSet, int customersId)
         {
@@ -2857,13 +2864,13 @@ namespace OnlineStore
                     {
                         if (customersId == (int) dataRow.ItemArray[0])
                         {
-                            dataRow.ItemArray[2] = commonSum;
+                            dataRow[2] = commonSum;
                         }
                     }
                 }
             }
         }
-        
+
         //Метод возвращающий все поля с таблицы CartGood которая связывает Корзину и Товары с учетом Id Клиента
         static void GetCartGoodRowsCollections(DataSet dataSet, int customersId, out List<int> goodsIds,
             out List<int> goodsCount)
@@ -2885,11 +2892,11 @@ namespace OnlineStore
                 }
             }
         }
-        
+
         #endregion
-        
+
         #region Методы методов меню Корзины
-                          
+
         //Метод записывающий все цены товаров с учетом Id
         static void GetGoodsPriceCollection(DataSet dataSet, List<int> goodsIds, out List<int> goodsPrice)
         {
@@ -2911,7 +2918,7 @@ namespace OnlineStore
                 }
             }
         }
-        
+
         //Метод проверяющий наличие товаров в корзине с учетом Id клиента
         static bool IsEmptyCartGoodTable(DataSet dataSet, int customersId)
         {
@@ -2944,31 +2951,32 @@ namespace OnlineStore
 
             return false;
         }
-        
+
         //Вывод на экран сообщения о пустой корзине
         static void EmptyCartMessage()
         {
             Console.WriteLine("\n\t - - - Корзина пуста! - - -");
             Console.WriteLine("\n\t - - - Выберите что-нибудь из списка товаров - - -\n");
         }
+
         #endregion
-        
+
         #region Методы методов меню Курьера
-        
+
         //Метод выбора курьера
         static int PickEmployee()
         {
             Random random = new Random();
             return random.Next(1, 100);
         }
-        
+
         //Метод возвращающий все поля с таблицы OrderGood которая связывает Заказ и Товары с учетом Id заказа
         static void GetOrderGoodRowsCollections(DataSet dataSet, int orderId, out List<int> goodsIds,
             out List<int> goodsCount)
         {
             goodsIds = new List<int>();
             goodsCount = new List<int>();
-            
+
             foreach (DataTable dt in dataSet.Tables)
             {
                 if (dt.TableName == "OrderGood")
@@ -2984,7 +2992,7 @@ namespace OnlineStore
                 }
             }
         }
-        
+
         //Вывод на экран статуса заказа
         static void ShowOrderStatus(DataSet dataSet, int orderStatusId)
         {
@@ -3030,7 +3038,7 @@ namespace OnlineStore
                 }
             }
         }
-        
+
         //Изменение статуса заказа
         static void ChangeOrderStatus(DataSet dataSet, int orderStatusId, string statusName)
         {
@@ -3051,7 +3059,7 @@ namespace OnlineStore
                 }
             }
         }
-        
+
         //Метод проверяющий наличие товаров в заказе с учетом Id клиента
         static bool IsEmptyOrderGoodTable(DataSet dataSet, int orderId)
         {
@@ -3088,18 +3096,18 @@ namespace OnlineStore
 
             return false;
         }
-        
+
         //Вывод на экран сообщения о пустом списке заказов
         static void EmptyOrderMessage()
         {
             Console.WriteLine("\n\t - - - Список заказов пуст! - - -");
             Console.WriteLine("\n\t - - - Вы оплатили за доставку 2000 тг! - - -");
         }
-        
+
         #endregion
 
         #region Методы вывода ошибки на экран 
-        
+
         //Вывод ошибки при вводе символа
         static void ParseError()
         {
@@ -3111,8 +3119,7 @@ namespace OnlineStore
         {
             Console.WriteLine("Число должно быть больше 0 и меньше/равно 10.");
         }
-        
+
         #endregion
-        
     }
 }
