@@ -29,3 +29,9 @@ C:\Users\user\RiderProjects\OnlineStorePractice\AdoNetPractice_OnlineStore\obj\D
 C:\Users\user\RiderProjects\OnlineStorePractice\AdoNetPractice_OnlineStore\obj\Debug\OnlineStore.csproj.CoreCompileInputs.cache
 C:\Users\user\RiderProjects\OnlineStorePractice\AdoNetPractice_OnlineStore\obj\Debug\OnlineStore.exe
 C:\Users\user\RiderProjects\OnlineStorePractice\AdoNetPractice_OnlineStore\obj\Debug\OnlineStore.pdb
+C:\Users\chert\Documents\practice\AdoNetPractice_OnlineStore\bin\Debug\OnlineStore.exe.config
+C:\Users\chert\Documents\practice\AdoNetPractice_OnlineStore\bin\Debug\OnlineStore.exe
+C:\Users\chert\Documents\practice\AdoNetPractice_OnlineStore\bin\Debug\OnlineStore.pdb
+C:\Users\chert\Documents\practice\AdoNetPractice_OnlineStore\obj\Debug\OnlineStore.csproj.CoreCompileInputs.cache
+C:\Users\chert\Documents\practice\AdoNetPractice_OnlineStore\obj\Debug\OnlineStore.exe
+C:\Users\chert\Documents\practice\AdoNetPractice_OnlineStore\obj\Debug\OnlineStore.pdb

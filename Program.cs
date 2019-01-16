@@ -21,8 +21,45 @@ namespace OnlineStore
 
         public static void Main(string[] args)
         {
+            var providerName = ConfigurationManager.ConnectionStrings["OnlineStore"].ProviderName;
+            var connectionString = ConfigurationManager.ConnectionStrings["OnlineStore"].ConnectionString;
+
+            DbProviderFactory providerFactory = DbProviderFactories.GetFactory(providerName);
+
             DataSet dataSet = new DataSet("OnlineStore");
+
+            DbDataAdapter dataAdapter = providerFactory.CreateDataAdapter();
+
+            DbConnection connection = providerFactory.CreateConnection();
+            connection.ConnectionString = connectionString;
+
+            DbCommand selectCommand = providerFactory.CreateCommand();
+            selectCommand.CommandText = "select * from Customer;";
+            selectCommand.CommandText += "select * from Employee;";
+            selectCommand.CommandText += "select * from Cart;";
+            selectCommand.CommandText += "select * from OrderStatus;";
+            selectCommand.CommandText += "select * from Orders;";
+            selectCommand.CommandText += "select * from DeliveryStatus;";
+            selectCommand.CommandText += "select * from Delivery;";
+            selectCommand.CommandText += "select * from Manufacturer;";
+            selectCommand.CommandText += "select * from Category;";
+            selectCommand.CommandText += "select * from Good;";
+            selectCommand.CommandText += "select * from CartGood;";
+            selectCommand.CommandText += "select * from OrderGood;";
+            selectCommand.CommandText += "select * from TransactionStatus;";
+            selectCommand.CommandText += "select * from Transactions;";
+            selectCommand.Connection = connection;
+
+            dataAdapter.SelectCommand = selectCommand;
+
+            DbCommandBuilder dbCommandBuilder = providerFactory.CreateCommandBuilder();
+            dbCommandBuilder.DataAdapter = dataAdapter;
+
             DataSetMethod(dataSet);
+
+            dataAdapter.Fill(dataSet);
+            dataAdapter.Update(dataSet);
+
             int customersId = CustomersList(dataSet);
             MainMenu(dataSet, customersId);
             Console.ReadKey(true);
@@ -1734,12 +1771,14 @@ namespace OnlineStore
             #region Customer
 
             DataTable customer = new DataTable("Customer");
-            DataColumn customerId = new DataColumn("Id");
-            customerId.DataType = typeof(int);
-            customerId.AllowDBNull = false;
-            customerId.AutoIncrement = true;
-            customerId.AutoIncrementSeed = 1;
-            customerId.AutoIncrementStep = 1;
+            DataColumn customerId = new DataColumn("Id")
+            {
+                DataType = typeof(int),
+                AllowDBNull = false,
+                AutoIncrement = true,
+                AutoIncrementSeed = 1,
+                AutoIncrementStep = 1
+            };
 
             DataColumn customerFullName = new DataColumn("FullName");
             customerFullName.DataType = typeof(string);
@@ -1847,9 +1886,9 @@ namespace OnlineStore
 
             #endregion
 
-            #region Order
+            #region Orders
 
-            DataTable order = new DataTable("Order");
+            DataTable order = new DataTable("Orders");
             DataColumn orderId = new DataColumn("Id");
             orderId.DataType = typeof(int);
             orderId.AllowDBNull = false;
@@ -2094,9 +2133,9 @@ namespace OnlineStore
 
             #endregion
 
-            #region Transaction
+            #region Transactions
 
-            DataTable transaction = new DataTable("Transaction");
+            DataTable transaction = new DataTable("Transactions");
             DataColumn transactionId = new DataColumn("Id");
             transactionId.DataType = typeof(int);
             transactionId.AllowDBNull = false;
@@ -2493,14 +2532,14 @@ namespace OnlineStore
                     {
                         if ((int) row.ItemArray[1] == customersId)
                         {
-                            DataRow orderNewRow = dataSet.Tables["Order"].NewRow();
+                            DataRow orderNewRow = dataSet.Tables["Orders"].NewRow();
                             orderNewRow["Id"] = orderId;
                             orderNewRow["CustomerId"] = customersId;
                             orderNewRow["EmployeeId"] = PickEmployee();
                             orderNewRow["OrderDate"] = DateTime.Now;
                             orderNewRow["OrderStatusId"] = orderId;
                             orderNewRow["TotalSum"] = row.ItemArray[2];
-                            dataSet.Tables["Order"].Rows.Add(orderNewRow);
+                            dataSet.Tables["Orders"].Rows.Add(orderNewRow);
                         }
                     }
                 }
@@ -2654,7 +2693,7 @@ namespace OnlineStore
 
             foreach (DataTable dt in dataSet.Tables)
             {
-                if (dt.TableName == "Order")
+                if (dt.TableName == "Orders")
                 {
                     foreach (DataRow datarow in dt.Rows)
                     {
@@ -2671,7 +2710,7 @@ namespace OnlineStore
             }
         }
 
-        //Метод удаления товара из Order с учетом Id и кол-ва
+        //Метод удаления товара из Orders с учетом Id и кол-ва
         static void DeleteOrderGood(DataSet dataSet, int orderId)
         {
             if (IsEmptyOrderGoodTable(dataSet, orderId))
@@ -2773,7 +2812,7 @@ namespace OnlineStore
             }
         }
 
-        //Метод очистки Order с учетом Id, чтобы не удалить данные относящиеся к другим заказам
+        //Метод очистки Orders с учетом Id, чтобы не удалить данные относящиеся к другим заказам
         static void ClearOrder(DataSet dataSet, int orderId)
         {
             foreach (DataTable dataTable in dataSet.Tables)
@@ -2792,7 +2831,7 @@ namespace OnlineStore
 
             foreach (DataTable dataTable in dataSet.Tables)
             {
-                if (dataTable.TableName == "Order")
+                if (dataTable.TableName == "Orders")
                 {
                     foreach (DataRow dataRow in dataTable.Rows)
                     {
@@ -2999,7 +3038,7 @@ namespace OnlineStore
             int employeeId = 0;
             foreach (DataTable dataTable in dataSet.Tables)
             {
-                if (dataTable.TableName == "Order")
+                if (dataTable.TableName == "Orders")
                 {
                     foreach (DataRow dataRow in dataTable.Rows)
                     {
