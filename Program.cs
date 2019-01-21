@@ -21,6 +21,39 @@ namespace OnlineStore
 
         public static void Main(string[] args)
         {
+            //var providerName = ConfigurationManager.ConnectionStrings["itemConnectionString"].ProviderName;
+            //var connectionString = ConfigurationManager.ConnectionStrings["itemConnectionString"].ConnectionString;
+
+            //DbProviderFactory providerFactory = DbProviderFactories.GetFactory(providerName);
+
+            //DataSet itemsSet = new DataSet("itemsDb");
+            //DbDataAdapter dataAdapter = providerFactory.CreateDataAdapter();
+
+            //DbConnection connection = providerFactory.CreateConnection();
+            //connection.ConnectionString = connectionString;
+
+            //DbCommand selectCommand = providerFactory.CreateCommand();
+            //selectCommand.CommandText = "select * from Items";
+            //selectCommand.Connection = connection;
+
+            //dataAdapter.SelectCommand = selectCommand;
+
+            //DbCommandBuilder dbCommandBuilder = providerFactory.CreateCommandBuilder();
+            //dbCommandBuilder.DataAdapter = dataAdapter;
+
+            //dataAdapter.Fill(itemsSet, "Items");
+
+            //DataRow newRow = itemsSet.Tables["Items"].NewRow();
+            //newRow.BeginEdit();
+            //newRow.ItemArray = new object[] { 3, "машина", 100500, "Mercedes" };
+            //newRow.EndEdit();
+
+            //itemsSet.Tables["Items"].Rows.Add(newRow);
+
+            //dataAdapter.Update(itemsSet, "Items");
+
+            ////-------------------------
+
             var providerName = ConfigurationManager.ConnectionStrings["OnlineStore"].ProviderName;
             var connectionString = ConfigurationManager.ConnectionStrings["OnlineStore"].ConnectionString;
 
@@ -35,10 +68,20 @@ namespace OnlineStore
 
             DbCommand selectCommand = providerFactory.CreateCommand();
             selectCommand.CommandText = "select * from Customer;";
-            selectCommand.CommandText += "select * from Employee;";
-            selectCommand.CommandText += "select * from Cart;";
-            selectCommand.CommandText += "select * from OrderStatus;";
-            selectCommand.CommandText += "select * from Orders;";
+            dataAdapter.Fill(dataSet, "Customer");
+
+            selectCommand.CommandText = "select * from Employee;";
+            dataAdapter.Fill(dataSet, "Employee");
+
+            selectCommand.CommandText = "select * from Cart;";
+            dataAdapter.Fill(dataSet, "Cart");
+
+            selectCommand.CommandText = "select * from OrderStatus;";
+            dataAdapter.Fill(dataSet, "OrderStatus");
+
+            selectCommand.CommandText = "select * from Orders;";
+            dataAdapter.Fill(dataSet, "Orders");
+
             selectCommand.CommandText += "select * from DeliveryStatus;";
             selectCommand.CommandText += "select * from Delivery;";
             selectCommand.CommandText += "select * from Manufacturer;";
@@ -55,9 +98,22 @@ namespace OnlineStore
             DbCommandBuilder dbCommandBuilder = providerFactory.CreateCommandBuilder();
             dbCommandBuilder.DataAdapter = dataAdapter;
 
-            DataSetMethod(dataSet);
+            dataAdapter.Fill(dataSet, "DeliveryStatus");
+            dataAdapter.Fill(dataSet, "Delivery");
+            dataAdapter.Fill(dataSet, "Manufacturer");
+            dataAdapter.Fill(dataSet, "Category");
+            dataAdapter.Fill(dataSet, "Good");
+            dataAdapter.Fill(dataSet, "CartGood");
+            dataAdapter.Fill(dataSet, "OrderGood");
+            dataAdapter.Fill(dataSet, "TransactionStatus");
+            dataAdapter.Fill(dataSet, "Transactions");
 
-            dataAdapter.Fill(dataSet);
+            //dataAdapter.Fill(dataSet);
+
+            DataSetMethod(dataSet, dataAdapter);
+
+            //dataAdapter.Fill(dataSet);
+
             dataAdapter.Update(dataSet);
 
             int customersId = CustomersList(dataSet);
@@ -68,7 +124,7 @@ namespace OnlineStore
         #region Установка тестовых данных, избрание клиента и связывание Корзину с Клиентом
 
         //Метод устанавливающий тестовые значения
-        static DataSet DataSetMethod(DataSet dataSet)
+        static DataSet DataSetMethod(DataSet dataSet, DbDataAdapter dataAdapter)
         {
             var goods = new[]
             {
@@ -2162,6 +2218,22 @@ namespace OnlineStore
 
             #endregion
 
+            //dataAdapter.Fill(customer);
+            //dataAdapter.Fill(employee);
+            //dataAdapter.Fill(cart);
+            //dataAdapter.Fill(orderStatus);
+            //dataAdapter.Fill(order);
+            //dataAdapter.Fill(deliveryStatus);
+            //dataAdapter.Fill(delivery);
+            //dataAdapter.Fill(manufacturer);
+            //dataAdapter.Fill(category);
+            //dataAdapter.Fill(good);
+            //dataAdapter.Fill(cartGood);
+            //dataAdapter.Fill(orderGood);
+            //dataAdapter.Fill(transactionStatus);
+            //dataAdapter.Fill(transaction);
+           
+
             foreach (var item in customers)
                 customer.Rows.Add(new object[] {item.Id, item.FullName, item.Age, item.Address, item.Phone});
 
@@ -2172,7 +2244,7 @@ namespace OnlineStore
                 category.Rows.Add(new object[] {item.Id, item.Name});
 
             foreach (var item in manufacturers)
-                category.Rows.Add(new object[] {item.Id, item.Name});
+                manufacturer.Rows.Add(new object[] {item.Id, item.Name});
 
             foreach (var item in goods)
                 good.Rows.Add(new object[]
